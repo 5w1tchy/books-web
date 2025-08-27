@@ -1,0 +1,79 @@
+#nav-menu-container {
+  position: absolute;
+  top: 0;                /* ზედა */
+  left: 30%;             /* ეკრანის შუა ჰორიზონტალურად */
+  transform: translateX(-100%);  /* ოდნავ მარცხნივ */
+  padding: 20px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 0 0 10px 10px;
+}
+
+.banner-container {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  position: relative;
+  margin-top: 80px;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.5s;
+}
+.menu-button {
+  color: rgb(12, 3, 3);
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+/* მთლიანი მენიუს სტილი */
+.nav-menu {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0;
+  background-color: #444;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  border-radius: 5px;
+  min-width: 200px;
+}
+
+.nav-menu li {
+  padding: 5px 20px;
+}
+
+.nav-menu li a {
+  color: white;
+  text-decoration: none;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  display: none;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+.banner-container {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  position: relative;
+  margin-top: 80px;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.5s;
+}

@@ -1,0 +1,23 @@
+#nav-menu-container {
+  display: flex;
+  justify-content: flex-end; /* მარჯვნივ გასწორება */
+  align-items: center;       /* ვერტიკალურად შუაში */
+  position: absolute;        /* ზემოთ ფიქსაცია */
+  top: 20px;
+  right: 0;
+  padding: 20px;
+}
+
+.nav-menu {
+  list-style: none;
+  display: flex;
+  gap: 20px; /* ელემენტებს შორის დაშორება */
+  margin: 0;
+  padding: 0;
+}
+
+.nav-menu li a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+}
