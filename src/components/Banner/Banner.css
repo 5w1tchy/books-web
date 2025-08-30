@@ -1,0 +1,28 @@
+/* ეს სტილები უზრუნველყოფს, რომ ბანერი-სლაიდერი სწორად გამოჩნდეს
+  და არ აურიოს გვერდის მთავარი სტრუქტურა.
+*/
+.banner-container {
+  width: 30%; 
+  max-width: 1200px;
+  height: 300px;
+  margin: 20px auto; 
+  overflow: hidden;
+  background: #f0f0f0; /* ფონი, სანამ სურათი იტვირთება */
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* სურათი ლამაზად ავსებს კონტეინერს დამახინჯების გარეშე */
+  display: block;
+}
+
+/* ადაპტირება პატარა ეკრანებისთვის */
+@media (max-width: 768px) {
+  .banner-container {
+    height: 200px;
+    width: 95%;
+  }
+}

@@ -1,12 +1,15 @@
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import {
-  defineConfig
-} from 'vite'
 
 export default defineConfig({
-  plugins: [react()
-  ],
+  plugins: [react()],
   server: {
-    port: 5173
+    proxy: {
+      '/api': {
+        target: 'https://books-api-7hu5.onrender.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\//, '') // <<< აქ ვაშორებთ "/api"
+      }
+    }
   }
 })

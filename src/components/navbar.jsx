@@ -24,7 +24,7 @@ function NavBar() {
                 <li><a href="#cat2">კატეგორია 2</a></li>
               </ul>
             </li>
-            <li><a href="#books">წიგნები</a></li>
+            <li><a href="/books">წიგნები</a></li>
             <li><a href="#price">ფასი</a></li>
             <li><a href="#course">კურსი</a></li>
           </ul>

@@ -1,0 +1,171 @@
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 40px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  height: 80px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-link {
+  display: block;
+}
+
+.logo-image {
+  height: 60px;
+  width: auto;
+}
+
+.main-nav {
+  position: absolute;
+  left: 25%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.main-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.main-nav li {
+  position: relative;
+}
+
+.nav-button {
+  display: block;
+  padding: 15px 25px;
+  color: #2c3e50;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s ease, background-color 0.3s ease;
+  border-radius: 5px;
+}
+
+.dropdown-menu {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  z-index: 1000;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+.dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-menu li {
+  width: 100%;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 12px 20px;
+  color: #333;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+  background-color: #f0f0f0;
+  color: #3498db;
+}
+
+/* --- განახლებული სტილები საძიებო ველისთვის --- */
+.header-search {
+  /* კონტეინერის პოზიციონირება */
+  position: absolute;
+  left: 40%; /* <-- ვამაგრებთ მარცხენა მხარეს */
+  top: 50%;
+  transform: translateY(-50%);
+  height: 45px; /* სიმაღლე შიდა ელემენტებისთვის */
+}
+
+.search-icon-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* ხატულას ვაფიქსირებთ, რომ არ გადაადგილდეს */
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 45px;
+  height: 100%;
+  z-index: 2;
+}
+
+.search-icon {
+  stroke: #555;
+  transition: stroke 0.3s ease;
+}
+
+.search-icon-button:hover .search-icon,
+.header-search.active .search-icon {
+  stroke: #3498db;
+}
+
+.header-search input {
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 22px;
+  font-size: 1rem;
+  outline: none;
+  background-color: #fff;
+  color: #333;
+  height: 100%;
+  
+  /* საწყისი მდგომარეობა - ხატულის უკან დამალული */
+  width: 45px; 
+  padding: 10px 10px 10px 45px; /* მარცხნიდან ვტოვებთ ადგილს ხატულისთვის */
+  opacity: 0;
+  cursor: pointer;
+  transition: all 0.4s ease-in-out;
+}
+
+/* აქტიური მდგომარეობა - გამოჩენა */
+.header-search.active input {
+  width: 250px; /* <-- იზრდება მარჯვნივ */
+  opacity: 1;
+  cursor: text;
+}
+
+.header-search input::placeholder {
+  color: #999;
+}
+
+.header-search input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+

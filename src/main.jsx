@@ -11,8 +11,8 @@ function NavBar() {
   return (
     <nav style={{ display: "flex", justifyContent: "flex-end", padding: "20px" }}>
       <ul style={{ listStyle: "none", display: "flex", gap: "20px" }}>
-        <li><a href="#home">მთავარი</a></li>
-        <li><a href="#about">ჩვენს შესახებ</a></li>
+        <li><a href="/home">მთავარი</a></li>
+        <li><a href="/about">ჩვენს შესახებ</a></li>
       </ul>
     </nav>
   );

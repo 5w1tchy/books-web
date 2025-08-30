@@ -77,3 +77,23 @@
   object-fit: cover;
   transition: opacity 0.5s;
 }
+.header { /* ან თქვენი Header-ის მთავარი კლასის სახელი */
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: white; /* მიუთითეთ ფონი, რომ გამჭვირვალე არ იყოს */
+  z-index: 1000; /* მაღალი z-index, რომ სხვა კონტენტის ზემოთ გამოჩნდეს */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* სურვილისამებრ, ჩრდილი */
+}
+/* ეს სტილები უზრუნველყოფს, რომ Header და Footer 
+   თავ-თავიანთ ადგილას დარჩნენ და კონტენტი მათ შორის ისქროლებოდეს */
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1; /* ეს აიძულებს კონტენტს, დაიკავოს მთელი თავისუფალი სივრცე */
+}
