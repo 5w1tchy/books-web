@@ -1,28 +1,44 @@
-/* ეს სტილები უზრუნველყოფს, რომ ბანერი-სლაიდერი სწორად გამოჩნდეს
-  და არ აურიოს გვერდის მთავარი სტრუქტურა.
-*/
+/* ბანერების კონტეინერის სტილი */
 .banner-container {
-  width: 30%; 
-  max-width: 1200px;
-  height: 300px;
-  margin: 20px auto; 
-  overflow: hidden;
-  background: #f0f0f0; /* ფონი, სანამ სურათი იტვირთება */
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    width: 80vw; /* ეკრანის სიგანის 80% */
+    height: 60vh; /* ეკრანის სიმაღლის 60% */
+    border-radius: 20px;
+    overflow: hidden; /* რაც გარეთ გადის, დაიმალოს */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-.banner-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* სურათი ლამაზად ავსებს კონტეინერს დამახინჯების გარეშე */
-  display: block;
+/* თითოეული ბანერის სტილი */
+.banner {
+    flex: 1; /* თავიდან ყველა იკავებს თანაბარ ადგილს */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    cursor: pointer;
+    transition: flex 0.7s ease-in-out; /* ანიმაცია გაფართოებისას */
+    display: flex;
+    align-items: flex-end; /* ტექსტის ქვემოთ განლაგება */
+    padding: 20px;
 }
 
-/* ადაპტირება პატარა ეკრანებისთვის */
-@media (max-width: 768px) {
-  .banner-container {
-    height: 200px;
-    width: 95%;
-  }
+/* ბანერის სათაურის სტილი */
+.banner h3 {
+    color: white;
+    font-size: 24px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    margin: 0;
+    opacity: 0; /* თავიდან დამალულია */
+    transition: opacity 0.5s ease;
+    white-space: nowrap; /* ხელს უშლის ტექსტის გადანაცვლებას */
+}
+
+/* როდესაც ბანერი გაფართოებულია (აქტიურია) */
+.banner.expanded {
+    flex: 5; /* იკავებს 5-ჯერ მეტ ადგილს, ვიდრე სხვები */
+}
+
+/* გაფართოებულ ბანერში სათაური გამოჩნდება */
+.banner.expanded h3 {
+    opacity: 1;
+    transition-delay: 0.3s; /* მცირე დაყოვნება, რომ ანიმაციის შემდეგ გამოჩნდეს */
 }

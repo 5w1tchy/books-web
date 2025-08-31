@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 40px;
-  background-color: #ffffff;
+  background-color: #2c3e50;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
   height: 80px;
@@ -169,3 +169,78 @@
   box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
 }
 
+/* --- მენიუს სტილები --- */
+
+/* მენიუს მთავარი კონტეინერის პოზიციონირება */
+.dropdown {
+    position: relative; /* ეს აუცილებელია, რომ შვილობილი მენიუ ამ ელემენტის მიმართ განლაგდეს */
+    display: inline-block;
+}
+
+/* მთავარი ღილაკის ("მენიუ") სტილი */
+.nav-button {
+    background-color: #4a4a4a; /* ფონი */
+    color: white; /* ტექსტის ფერი */
+    padding: 12px 20px; /* შიდა დაშორება */
+    font-size: 16px;
+    border: none; /* ჩარჩოს მოშორება */
+    border-radius: 8px; /* მომრგვალებული კუთხეები */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* რბილი ანიმაცია ფერის შეცვლისას */
+}
+
+/* ღილაკზე მაუსის მიტანისას ფერის შეცვლა */
+.nav-button:hover, .nav-button:focus {
+    background-color: #6a6a6a;
+}
+
+/* ჩამოსაშლელი მენიუს კონტეინერი (სწორედ ეს არის ჩვენი "ჩარჩო") */
+.dropdown-menu {
+    /* 1. დამალვის ლოგიკა */
+    opacity: 0; /* თავიდან გამჭვირვალეა */
+    visibility: hidden; /* და სრულიად დამალული */
+    transform: translateY(-10px); /* ოდნავ ზემოთ აწეული ანიმაციისთვის */
+    
+    /* 2. პოზიციონირება */
+    position: absolute; /* აბსოლუტური პოზიცია მშობელი .dropdown-ის მიმართ */
+    top: 100%; /* განლაგდეს ღილაკის პირდაპირ ქვემოთ */
+    left: 0;
+    z-index: 1000; /* რომ სხვა ელემენტებს ზემოდან მოექცეს */
+    
+    /* 3. ჩარჩოს სტილები */
+    background-color: white;
+    min-width: 200px; /* მინიმალური სიგანე */
+    border: 1px solid #e0e0e0; /* ნაზი ნაცრისფერი ჩარჩო */
+    border-radius: 8px; /* მომრგვალებული კუთხეები */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* ლამაზი ჩრდილი */
+    padding: 8px 0; /* შიდა დაშორება ზემოთ და ქვემოთ */
+    list-style: none; /* წერტილების მოშორება */
+    margin-top: 8px; /* მცირე დაშორება ღილაკიდან */
+
+    /* 4. ანიმაცია */
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+/* მენიუს გამოჩენა მაუსის მიტანისას */
+/* როდესაც მაუსს მივიტანთ .dropdown ელემენტზე, მის შიგნით არსებული .dropdown-menu გახდება ხილვადი */
+.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0); /* დაუბრუნდეს საწყის პოზიციას */
+}
+
+/* მენიუს შიგნით არსებული ლინკების სტილი */
+.dropdown-menu li a, 
+.dropdown-menu li Link { /* Link კომპონენტიც ჩვეულებრივ <a> თეგად იქცევა */
+    color: #333; /* ტექსტის ფერი */
+    padding: 12px 20px; /* შიდა დაშორება */
+    text-decoration: none;
+    display: block; /* რომ მთლიანი ხაზი იყოს კლიკვადი */
+    transition: background-color 0.2s ease; /* ანიმაცია ფონის შეცვლისას */
+}
+
+/* ლინკზე მაუსის მიტანისას ფონის შეცვლა */
+.dropdown-menu li a:hover, 
+.dropdown-menu li Link:hover {
+    background-color: #f5f5f5; /* ნაზი ნაცრისფერი ფონი */
+}

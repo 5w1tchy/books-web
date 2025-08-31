@@ -29,7 +29,7 @@ const Header = () => {
       <div className="logo-container">
         <Link to="/" className="logo-link">
            {/* src-ში ჩასვით თქვენი ლოგოს მისამართი */}
-          <img src="https://placehold.co/150x50/3498db/ffffff?text=ჩემი+ლოგო" alt="Logo" className="logo-image" />
+          <img src="/images/Logo.png" alt="Logo" className="logo-image" />
         </Link>
       </div>
 
