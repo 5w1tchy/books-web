@@ -1,21 +1,32 @@
-/* ეს სტილები დაამატეთ თქვენი App.css ფაილის ბოლოში */
-
-.section-title {
-  width: 100%; /* დაიკავოს კონტეინერის სრული სიგანე */
-  text-align: center; /* ტექსტი ცენტრში */
-  font-size: 2.5rem;
-  color: #333;
-  margin-top: 40px; /* დაშორება ზედა ელემენტიდან (Header) */
-  margin-bottom: 30px; /* დაშორება ბანერამდე */
-}
-
-/* თუ გინდათ, რომ მთავარ გვერდზე კონტენტი ცენტრში იყოს, 
-   შეგიძლიათ main-content კლასს დაამატოთ ეს თვისებები.
-   თუმცა, გაითვალისწინეთ, რომ ეს ყველა გვერდზე იმოქმედებს.
-*/
-.main-content {
+/* --- აპლიკაციის მთავარი კონტეინერის სტილი --- */
+.app-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* ჰორიზონტალურად ცენტრში */
-  width: 100%;
+  min-height: 100vh;
+  background-color: #f4f7f6;
 }
+
+/* --- ძირითადი კონტენტის არეალი --- */
+.main-content {
+  flex-grow: 1;
+  padding: 40px 20px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* --- მთავარი გვერდის განლაგება (Intro + Banner) --- */
+.home-layout {
+  display: flex;
+  gap: 30px; /* დაშორება ბლოკებს შორის */
+  align-items: flex-start;
+}
+
+/* --- მედია წესი პატარა ეკრანებისთვის --- */
+@media (max-width: 900px) {
+  .home-layout {
+    flex-direction: column; /* სვეტში განლაგება */
+    align-items: stretch;
+  }
+}
+

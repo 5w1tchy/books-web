@@ -1,50 +1,36 @@
 import React, { useState } from "react";
-// იმპორტი CSS ფაილის
-import "./Banner.css";
+import "./banner.css"; // CSS ფაილის იმპორტი
 
-// მონაცემები ბანერებისთვის: სურათები და სათაურები
+// მონაცემები ბანერებისთვის
 const bannersData = [
   {
-    image: "/images/banner1.jpg",
-    title: "მოგზაურობა"
+    image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
+    title: "ფანტასტიკა"
   },
   {
-    image: "/images/banner2.jpg",
-    title: "ტექნოლოგია"
+    image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3",
+    title: "კლასიკა"
   },
   {
-    image: "/images/banner3.jpg",
-    title: "ბუნება"
+    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3",
+    title: "რომანები"
   }
 ];
 
 function Banner() {
-  // useState Hook-ი, რომელიც ინახავს ამჟამად გაფართოებული ბანერის ინდექსს.
-  // თავდაპირველად პირველი ბანერი (ინდექსი 0) იქნება გაფართოებული.
   const [expandedIndex, setExpandedIndex] = useState(0);
 
-  // ფუნქცია, რომელიც გამოიძახება მაუსის მიტანისას და ცვლის აქტიურ ინდექსს
   const handleMouseEnter = (index) => {
     setExpandedIndex(index);
   };
 
   return (
     <div className="banner-container">
-      {/* bannersData მასივზე გადავუვლით map ფუნქციით, რომ თითოეული ელემენტისთვის დავხატოთ ბანერი */}
       {bannersData.map((banner, index) => (
         <div
-          // key აუცილებელია React-ისთვის, როდესაც ელემენტებს ვხატავთ სიიდან
           key={index}
-          
-          // className-ს ვანიჭებთ დინამიურად:
-          // 'banner' კლასი ყველას ექნება.
-          // 'expanded' კლასი დაემატება მხოლოდ იმ შემთხვევაში, თუ ამ ელემენტის ინდექსი ემთხვევა expandedIndex-ს.
           className={`banner ${index === expandedIndex ? 'expanded' : ''}`}
-          
-          // მაუსის მიტანისას ვიძახებთ handleMouseEnter ფუნქციას და გადავცემთ მიმდინარე ინდექსს
           onMouseEnter={() => handleMouseEnter(index)}
-          
-          // ფონის სურათს ვანიჭებთ inline style-ით
           style={{ backgroundImage: `url(${banner.image})` }}
         >
           <h3>{banner.title}</h3>

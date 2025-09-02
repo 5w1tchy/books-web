@@ -17,6 +17,123 @@
 .logo-link {
   display: block;
 }
+.header {
+  background-color: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 0 30px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 70px;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-decoration: none;
+}
+
+.navigation {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #34495e;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 5px 0;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #3498db;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #3498db;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+.header-right-side {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-input {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.search-input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  position: relative; /* მნიშვნელოვანია მოდალის პოზიციონირებისთვის */
+}
+
+.auth-btn {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.login-btn {
+  background-color: transparent;
+  color: #3498db;
+  border: 1px solid #3498db;
+}
+
+.login-btn:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+.register-btn {
+  background-color: #3498db;
+  color: white;
+  border: 1px solid #3498db;
+}
+
+.register-btn:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+}
 
 .logo-image {
   height: 60px;
