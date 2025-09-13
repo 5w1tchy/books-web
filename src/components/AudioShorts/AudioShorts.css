@@ -1,170 +1,169 @@
-.shorts-section {
-  max-width: 1200px;
-  margin: 60px auto;
-  padding: 0 20px;
-  text-align: center;
-}
-
-.section-title {
-  font-size: 2.2rem;
-  color: #2c3e50;
-  margin-bottom: 40px;
-  position: relative;
-  display: inline-block;
-  padding-bottom: 10px;
-}
-
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 70px;
-  height: 4px;
-  background-color: #3498db;
-  border-radius: 2px;
-}
-
-/* --- სლაიდერის სტილები --- */
-.shorts-slider {
-  position: relative;
-  display: flex;
-  align-items: center;
-  /* დაშორება ისრებისთვის */
-  padding: 0 40px; 
-}
-
-.shorts-slider-wrapper {
-  overflow: hidden;
+/* src/components/AudioShorts/AudioShorts.css */
+.audio-shorts-container {
   width: 100%;
-  /* ვამატებთ გრადიენტულ ნიღაბს კიდეებში, რომ ლამაზად გაქრეს */
-  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  padding: 60px 0 40px 0;
+  background-color: #f9f9f9;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.shorts-container {
+.audio-shorts-container h2 {
+  text-align: center;
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 40px;
+}
+
+.scrolling-wrapper {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  padding-top: 50px;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.shorts-grid {
   display: flex;
-  gap: 30px;
-  padding-bottom: 20px;
-  /* ანიმაციის დრო დამოკიდებულია ელემენტების რაოდენობაზე (მაგ: 20 ელემენტი * 3წმ = 60წმ) */
-  animation: infinite-scroll 60s linear infinite;
+  animation: scroll 24s linear infinite;
+  width: calc(250px * 12);
 }
 
-/* --- ანიმაციის გაჩერება სლაიდერზე მაუსის მიტანისას --- */
-.shorts-slider:hover .shorts-container {
+.scrolling-wrapper:hover .shorts-grid,
+.scrolling-wrapper:hover::before {
     animation-play-state: paused;
 }
 
-/* --- შეცვლილი სტილები მრგვალი დიზაინისთვის --- */
-.short-item {
-  min-width: 280px;
+@keyframes scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(calc(-250px * 6)); }
+}
+
+.short-card {
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-  transition: transform 0.3s ease;
-}
-
-.short-item:hover {
-  transform: scale(1.05); /* ოდნავ ვადიდებთ მაუსის მიტანისას */
-}
-
-.short-cover {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  transition: box-shadow 0.3s ease;
-}
-
-.short-item:hover .short-cover {
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
-}
-
-.short-info {
-  padding: 0 10px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  width: 100%;
-  align-items: center;
-}
-
-/* --- ისრების სტილები (დაბრუნებულია) --- */
-.slider-arrow {
-  position: absolute;
-  top: 40%;
-  transform: translateY(-40%);
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid #e0e0e0;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  font-size: 22px;
-  color: #333;
-  cursor: pointer;
-  z-index: 10;
+  width: 220px;
+  height: 220px; /* სიმაღლეს ვაფიქსირებთ */
+  margin: 0 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  /* --- ვიზუალის ცვლილებები --- */
+  background-color: #8D6E63; /* წიგნის ყდის ფერი */
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  transition: all 0.2s ease;
+  font-size: 100px; /* ემოჯის ზომა */
+  border: 4px solid #5D4037;
 }
 
-.slider-arrow:hover {
-  background-color: #fff;
-  transform: translateY(-40%) scale(1.1);
+.short-card::before {
+    content: '📕'; /* დახურული წიგნის ემოჯი */
 }
 
-.slider-arrow:disabled {
-  cursor: not-allowed;
-  opacity: 0.3;
+.short-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
-.left-arrow {
+/* ვმალავთ სურათს და ტექსტს ვათავსებთ ბარათის ქვედა ნაწილში */
+.short-image {
+  display: none;
+}
+
+.short-info {
+  position: absolute;
+  bottom: 0;
   left: 0;
-}
-
-.right-arrow {
-  right: 0;
-}
-
-
-/* --- დანარჩენი სტილები --- */
-.short-title {
-  font-size: 1.2rem;
-  margin: 0 0 5px 0;
-  color: #34495e;
-}
-.short-author {
-  font-size: 0.9rem;
-  color: #7f8c8d;
-  margin: 0 0 15px 0;
-  flex-grow: 1;
-}
-.short-player {
   width: 100%;
-  height: 40px;
-  margin-top: auto;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  text-align: center;
 }
 
-/* --- ავტომატური სქროლის ანიმაციის კადრები --- */
-/* მნიშვნელოვანია: იმისთვის, რომ სქროლი იდეალურად უსასრულო იყოს, */
-/* React კომპონენტში (AudioShorts.jsx) საჭიროა ელემენტების სიის გაორმაგება. */
-@keyframes infinite-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    /* 20 ელემენტი * (280px სიგანე + 30px დაშორება) = 6200px */
-    transform: translateX(-6200px);
-  }
+.short-info h3,
+.short-info p {
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.short-info h3 {
+  font-size: 1rem;
+}
+.short-info p {
+    font-size: 0.8rem;
+}
+
+/* --- სტილები ანიმირებული ბიჭუნასთვის --- */
+.scrolling-wrapper::before {
+  content: ''; /* ემოჯის მაგივრად ვიყენებთ ცარიელ კონტენტს */
+  position: absolute;
+  top: -15px;
+  left: 0;
+  z-index: 20;
+
+  /* პერსონაჟის ზომები */
+  width: 80px;
+  height: 80px;
+
+  /* სპრაიტის სურათი */
+  background-image: url('https://i.ibb.co/Q8L52P7/boy-sprite-sheet.png');
+  background-repeat: no-repeat;
+  background-size: 640px 80px; /* სურათის სრული ზომა (8 კადრი * 80px) */
+
+  /* ორი ანიმაციის გაერთიანება: ერთი ნახტომისთვის, მეორე სირბილისთვის */
+  animation: 
+    jumper-hop 24s linear infinite,
+    run-cycle 0.6s steps(8) infinite; /* 8 კადრიანი ანიმაცია */
+}
+
+/* სირბილის ანიმაცია (კადრების ცვლილება) */
+@keyframes run-cycle {
+  from { background-position: 0 0; }
+  to { background-position: -640px 0; } /* სურათის ბოლომდე გადაწევა */
+}
+
+
+/* მოხტუნავე ბიჭუნას დახვეწილი ანიმაცია (ბრუნვის გარეშე) */
+@keyframes jumper-hop {
+  /* --- წიგნი 1 --- */
+  0% { transform: translateX(80px) translateY(0); }
+  6% { transform: translateX(80px) translateY(5px); } /* მომზადება */
+  12% { transform: translateX(calc(80px + 125px)) translateY(-70px); } /* ნახტომის პიკი */
+  16.66% { transform: translateX(calc(80px + 250px)) translateY(0); } /* დაშვება */
+
+  /* --- წიგნი 2 --- */
+  17.66% { transform: translateX(calc(80px + 250px)) translateY(-5px); } /* დაშვების ეფექტი */
+  22.66% { transform: translateX(calc(80px + 250px)) translateY(5px); }
+  28.66% { transform: translateX(calc(80px + 250px + 125px)) translateY(-70px); }
+  33.33% { transform: translateX(calc(80px + 500px)) translateY(0); }
+  
+  /* --- წიგნი 3 --- */
+  34.33% { transform: translateX(calc(80px + 500px)) translateY(-5px); }
+  39.33% { transform: translateX(calc(80px + 500px)) translateY(5px); }
+  45.33% { transform: translateX(calc(80px + 500px + 125px)) translateY(-70px); }
+  50% { transform: translateX(calc(80px + 750px)) translateY(0); }
+
+  /* --- წიგნი 4 --- */
+  51% { transform: translateX(calc(80px + 750px)) translateY(-5px); }
+  56% { transform: translateX(calc(80px + 750px)) translateY(5px); }
+  62% { transform: translateX(calc(80px + 750px + 125px)) translateY(-70px); }
+  66.66% { transform: translateX(calc(80px + 1000px)) translateY(0); }
+
+  /* --- წიგნი 5 --- */
+  67.66% { transform: translateX(calc(80px + 1000px)) translateY(-5px); }
+  72.66% { transform: translateX(calc(80px + 1000px)) translateY(5px); }
+  78.66% { transform: translateX(calc(80px + 1000px + 125px)) translateY(-70px); }
+  83.33% { transform: translateX(calc(80px + 1250px)) translateY(0); }
+
+  /* --- წიგნი 6 --- */
+  84.33% { transform: translateX(calc(80px + 1250px)) translateY(-5px); }
+  89.33% { transform: translateX(calc(80px + 1250px)) translateY(5px); }
+  95.33% { transform: translateX(calc(80px + 1250px + 125px)) translateY(-70px); }
+  100% { transform: translateX(calc(80px + 1500px)) translateY(0); }
 }
 

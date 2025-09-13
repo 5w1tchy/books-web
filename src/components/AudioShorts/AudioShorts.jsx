@@ -1,83 +1,38 @@
-import React, { useState } from 'react';
-import './AudioShorts.css';
+import React from 'react';
+import './AudioShorts.css'; // დაგჭირდებათ შესაბამისი CSS ფაილი
 
-// დროებითი მონაცემები. რეალურ აპლიკაციაში ეს მონაცემები API-დან წამოვა.
-const shortsData = Array.from({ length: 20 }, (_, i) => ({
-  id: i + 1,
-  title: `წიგნის სათაური ${i + 1}`,
-  author: `ავტორი ${i + 1}`,
-  coverUrl: `https://placehold.co/280x200/5DADE2/ffffff?text=Book${i + 1}`,
-  audioUrl: 'path/to/your/audio.mp3'
-}));
-
-// ეს ცვლადი განსაზღვრავს, რამდენი ელემენტი არ უნდა დარჩეს ეკრანს მიღმა,
-// რომ "შემდეგი" ღილაკი გაითიშოს. დესკტოპისთვის 4 ოპტიმალურია.
-const ITEMS_PER_PAGE = 4;
+// დროებითი, სტატიკური მონაცემები ვიზუალისთვის
+const placeholderShorts = [
+    { id: 1, title: 'მოგზაურობა მთვარეზე', author: 'ჟიულ ვერნი', imageUrl: 'https://placehold.co/220x220/A5D6A7/FFFFFF?text=Audio&font=raleway' },
+    { id: 2, title: 'უხილავი კაცი', author: 'ჰ. ჯ. უელსი', imageUrl: 'https://placehold.co/220x220/90CAF9/FFFFFF?text=Audio&font=raleway' },
+    { id: 3, title: 'ზღაპარი მეფე სალტანისა', author: 'ალექსანდრე პუშკინი', imageUrl: 'https://placehold.co/220x220/FFCC80/FFFFFF?text=Audio&font=raleway' },
+    { id: 4, title: 'პატარა პრინცი', author: 'ანტუან დე სენტ-ეგზიუპერი', imageUrl: 'https://placehold.co/220x220/CE93D8/FFFFFF?text=Audio&font=raleway' },
+    { id: 5, title: 'ალქიმიკოსი', author: 'პაულო კოელიო', imageUrl: 'https://placehold.co/220x220/EF9A9A/FFFFFF?text=Audio&font=raleway' },
+    { id: 6, title: 'სამი მუშკეტერი', author: 'ალექსანდრე დიუმა', imageUrl: 'https://placehold.co/220x220/B0BEC5/FFFFFF?text=Audio&font=raleway' }
+];
 
 function AudioShorts() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+    // უწყვეტი ანიმაციისთვის მონაცემებს ვაორმაგებთ
+    const shortsForAnimation = [...placeholderShorts, ...placeholderShorts];
 
-  const goToPrevious = () => {
-    // ვამოწმებთ, რომ პირველ სლაიდზე უფრო უკან არ გადავიდეთ
-    const isFirstSlide = currentIndex === 0;
-    if (!isFirstSlide) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
-
-  const goToNext = () => {
-    // ვამოწმებთ, რომ ბოლო სლაიდების ჯგუფს არ გავცდეთ
-    const isLastGroup = currentIndex >= shortsData.length - ITEMS_PER_PAGE;
-    if (!isLastGroup) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  // ობიექტი, რომელიც დინამიურად ცვლის სტილს და ამოძრავებს კონტეინერს
-  const sliderStyle = {
-    transform: `translateX(-${currentIndex * (280 + 30)}px)` // 280px (სიგანე) + 30px (დაშორება)
-  };
-
-  return (
-    <section className="shorts-section">
-      <h2 className="section-title">ბოლოს დამატებული აუდიო შორთები</h2>
-      <div className="shorts-slider">
-        <button 
-          onClick={goToPrevious} 
-          className="slider-arrow left-arrow" 
-          disabled={currentIndex === 0}
-        >
-          &#10094;
-        </button>
-
-        <div className="shorts-slider-wrapper">
-          <div className="shorts-container" style={sliderStyle}>
-            {shortsData.map(short => (
-              <article key={short.id} className="short-item">
-                <img src={short.coverUrl} alt={short.title} className="short-cover" />
-                <div className="short-info">
-                  <h3 className="short-title">{short.title}</h3>
-                  <p className="short-author">{short.author}</p>
-                  <audio controls className="short-player">
-                    <source src={short.audioUrl} type="audio/mpeg" />
-                    თქვენი ბრაუზერი არ უჭერს მხარს აუდიო ელემენტს.
-                  </audio>
+    return (
+        <div className="audio-shorts-container">
+            <h2>აუდიო მოთხრობები</h2>
+            <div className="scrolling-wrapper">
+                <div className="shorts-grid">
+                    {shortsForAnimation.map((short, index) => (
+                        <div key={`${short.id}-${index}`} className="short-card">
+                            <img src={short.imageUrl} alt={short.title} className="short-image"/>
+                            <div className="short-info">
+                                <h3>{short.title}</h3>
+                                <p>{short.author}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-              </article>
-            ))}
-          </div>
+            </div>
         </div>
-        
-        <button 
-          onClick={goToNext} 
-          className="slider-arrow right-arrow"
-          disabled={currentIndex >= shortsData.length - ITEMS_PER_PAGE}
-        >
-          &#10095;
-        </button>
-      </div>
-    </section>
-  );
+    );
 }
 
 export default AudioShorts;
