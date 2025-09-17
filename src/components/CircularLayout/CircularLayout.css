@@ -1,0 +1,173 @@
+/* src/components/CircularLayout/CircularLayout.css - განახლებული ანიმაციით */
+.circular-layout-section {
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.circular-container {
+  position: relative;
+  width: 700px;
+  height: 700px;
+  --total: 5;
+  cursor: pointer;
+}
+
+/* --- ცენტრალური ელემენტი: წიგნი --- */
+.center-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 260px;
+  height: 340px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 30px;
+  box-sizing: border-box;
+  font-size: 18px;
+  color: white;
+  z-index: 10;
+  
+  /* დახვეწილი ვიზუალი */
+  background: linear-gradient(145deg, #6c94b8, #5b85aa);
+  border-radius: 4px 15px 15px 4px;
+  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.2), inset 1px 1px 2px rgba(255, 255, 255, 0.2);
+  
+  transition: transform 0.4s ease;
+  transform: translate(-50%, -50%) perspective(1500px) rotateY(-10deg);
+}
+
+.circular-container:hover .center-circle {
+    transform: translate(-50%, -50%) perspective(1500px) rotateY(0deg) scale(1.05);
+}
+
+/* წიგნის ყუა (Spine) */
+.center-circle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(to right, #4a6d8c, #5b85aa);
+    border-radius: 4px 0 0 4px;
+    transform-origin: left center;
+    transform: rotateY(10deg);
+}
+
+/* წიგნის ფურცლების ეფექტი */
+.center-circle::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 0;
+    right: 5px;
+    bottom: 5px;
+    z-index: -1;
+    border-radius: 2px 8px 8px 2px;
+    background: #f0f0f0;
+    box-shadow: 
+        inset 5px 0 15px rgba(0, 0, 0, 0.15),
+        inset -1px 0 0 rgba(0,0,0,0.1),
+        inset -2px 0 0 #f8f8f8,
+        inset -3px 0 0 rgba(0,0,0,0.05),
+        inset -4px 0 0 #f8f8f8;
+}
+
+/* უხილავი ორბიტა */
+.satellite-orbit {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+}
+
+/* თითოეული პატარა წრის "საბრუნი" ღერძი */
+.satellite-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 110px;
+  height: 110px;
+  margin: -55px;
+  
+  /* საწყისი მდგომარეობა: ცენტრიდან წანაცვლებული, გამჭვირვალე და პატარა */
+  opacity: 0;
+  transform:
+    rotate(calc(360deg / var(--total) * var(--i)))
+    translateY(0) /* იწყებს ცენტრთან ახლოს */
+    translateX(calc((var(--i) - 2) * 80px)) /* სხვადასხვა ჰორიზონტალური საწყისი წერტილი */
+    scale(0.3);
+
+  /* ანიმაცია, დაყოვნებით და "გაზაფხულის" ეფექტით */
+  transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s;
+  transition-delay: calc(0.08s * var(--i));
+  pointer-events: none;
+}
+
+/* ჰოვერზე: წრეები გამოდის ორბიტაზე */
+.circular-container:hover .satellite-wrapper {
+  opacity: 1;
+  /* საბოლოო მდგომარეობა: თავის ადგილას ორბიტაზე */
+  transform: rotate(calc(360deg / var(--total) * var(--i))) translateY(-295px) scale(1);
+  pointer-events: all;
+}
+
+/* თავად პატარა წრე */
+.satellite-circle {
+  width: 100%;
+  height: 100%;
+  background-color: #b7e4c7;
+  color: #212529;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  font-size: 14px;
+}
+
+.satellite-circle:hover {
+    transform: scale(1.1);
+}
+
+/* მედია-გასამართი პატარა ეკრანებისთვის */
+@media (max-width: 768px) {
+  .circular-container {
+    width: 95vw;
+    height: 95vw;
+  }
+  
+  .center-circle {
+    width: 200px;
+    height: 260px;
+    font-size: 14px;
+  }
+
+  .satellite-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: -40px;
+  }
+
+  .circular-container:hover .satellite-wrapper {
+      transform: rotate(calc(360deg / var(--total) * var(--i))) translateY(calc(-47.5vw + 40px)) scale(1);
+  }
+
+  .satellite-circle {
+      font-size: 12px;
+  }
+}
+

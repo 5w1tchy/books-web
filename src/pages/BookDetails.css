@@ -1,68 +1,70 @@
-.book-details-page {
-  padding: 2rem 1rem;
-  max-width: 1100px;
-  margin: 2rem auto;
-  background-color: #f9f9f9;
-  border-radius: 15px;
+/* src/components/BookDetails.css */
+
+.book-detail-page {
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.book-details-container {
-  display: grid;
-  grid-template-columns: 1fr 2fr; /* სურათი იკავებს 1 ნაწილს, ტექსტი 2-ს */
-  gap: 3rem;
-  align-items: start;
+.book-detail-container {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
 }
 
-.book-cover img {
-  width: 100%;
-  max-width: 350px;
+.book-detail-cover {
+  width: 300px;
   height: auto;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.book-content {
-  padding-top: 1rem;
+.book-detail-info {
+  flex: 1;
 }
 
-.book-title {
-  font-size: 2.8rem;
-  margin: 0 0 0.5rem 0;
-  color: #2c3e50;
-  line-height: 1.2;
+.book-detail-info h1 {
+  font-size: 2.5rem;
+  margin-top: 0;
+  margin-bottom: 10px;
 }
 
-.book-author {
+.book-detail-info h2 {
   font-size: 1.5rem;
   font-weight: 400;
-  color: #7f8c8d;
-  margin: 0 0 2rem 0;
-  border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 1rem;
+  color: #555;
+  margin-top: 0;
+  margin-bottom: 30px;
+  font-style: italic;
 }
 
-.book-description {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: #34495e;
+.book-summary-section h3 {
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
 }
 
-/* --- მობილური მოწყობილობებისთვის --- */
-@media (max-width: 768px) {
-  .book-details-container {
-    grid-template-columns: 1fr; /* ერთ სვეტად განლაგება */
-    text-align: center;
-  }
-  
-  .book-cover {
-    margin: 0 auto 2rem auto;
-  }
+.book-summary-section p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #333;
+}
+/* ... (შენი დანარჩენი სტილები) ... */
 
-  .book-title {
-    font-size: 2.2rem;
-  }
+.read-more-btn {
+  background-color: transparent;
+  border: 1px solid #007bff;
+  color: #007bff;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
 
-  .book-author {
-    font-size: 1.2rem;
-  }
+.read-more-btn:hover {
+  background-color: #007bff;
+  color: white;
 }

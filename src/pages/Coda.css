@@ -1,0 +1,18 @@
+/* src/components/Coda.css */
+
+.coda-container {
+  margin: 30px 0;
+  padding: 20px;
+  background-color: #f8f9fa; /* ღია ფონის ფერი */
+  border-left: 5px solid #007bff; /* აქცენტის ხაზი მარცხნივ */
+  text-align: center;
+}
+
+.coda-text {
+  font-family: 'Georgia', serif; /* ელეგანტური შრიფტი */
+  font-size: 1.6rem; /* დიდი ზომა */
+  font-style: italic; /* დახრილი სტილი */
+  color: #343a40; /* მუქი ნაცრისფერი ტექსტი */
+  margin: 0;
+  line-height: 1.5;
+}

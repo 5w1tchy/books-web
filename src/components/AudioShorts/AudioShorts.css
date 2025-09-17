@@ -1,10 +1,11 @@
-/* src/components/AudioShorts/AudioShorts.css */
+/* src/components/AudioShorts/AudioShorts.css - გასუფთავებული და სტაბილური ვერსია */
 .audio-shorts-container {
   width: 100%;
-  padding: 60px 0 40px 0;
+  padding: 60px 0;
   background-color: #f9f9f9;
   border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
+  overflow: hidden; /* უზრუნველყოფს, რომ შიგთავსი არ გადმოვიდეს */
 }
 
 .audio-shorts-container h2 {
@@ -18,152 +19,96 @@
   overflow: hidden;
   position: relative;
   width: 100%;
-  padding-top: 50px;
   -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
 
 .shorts-grid {
   display: flex;
-  animation: scroll 24s linear infinite;
-  width: calc(250px * 12);
+  width: calc(210px * 12); /* (180px width + 30px margin) * 12 books */
+  -webkit-animation: scroll 30s linear infinite;
+  animation: scroll 30s linear infinite;
 }
 
-.scrolling-wrapper:hover .shorts-grid,
-.scrolling-wrapper:hover::before {
-    animation-play-state: paused;
+.scrolling-wrapper:hover .shorts-grid {
+  -webkit-animation-play-state: paused;
+  animation-play-state: paused;
+}
+
+@-webkit-keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-210px * 6)); }
 }
 
 @keyframes scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(calc(-250px * 6)); }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-210px * 6)); }
 }
 
+/* --- წიგნის ბარათის ახალი, სადა სტილი --- */
 .short-card {
   flex-shrink: 0;
-  width: 220px;
-  height: 220px; /* სიმაღლეს ვაფიქსირებთ */
+  width: 180px;
+  height: 240px;
   margin: 0 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  /* --- ვიზუალის ცვლილებები --- */
-  background-color: #8D6E63; /* წიგნის ყდის ფერი */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 100px; /* ემოჯის ზომა */
-  border: 4px solid #5D4037;
-}
+  
+  background-color: #ffffff; /* სადა თეთრი ფონი */
+  border: 1px solid #e9ecef; /* თხელი, ღია ფერის ჩარჩო */
+  border-radius: 8px; /* მომრგვალებული კუთხეები */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* ძალიან რბილი ჩრდილი */
+  
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-.short-card::before {
-    content: '📕'; /* დახურული წიგნის ემოჯი */
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .short-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* ვმალავთ სურათს და ტექსტს ვათავსებთ ბარათის ქვედა ნაწილში */
-.short-image {
-  display: none;
+/* წიგნის ყუისა და ფურცლების სტილები სრულად ამოღებულია სისადავისთვის */
+.short-card::before,
+.short-card::after {
+    display: none;
 }
 
+/* ტექსტის ბლოკი */
 .short-info {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 8px;
-  background: rgba(0, 0, 0, 0.6);
-  text-align: center;
+  padding: 12px;
+  box-sizing: border-box;
+  background: transparent;
+  text-align: left;
+  z-index: 2;
 }
 
 .short-info h3,
 .short-info p {
-  color: #fff;
+  color: #212529; /* მუქი ფერი კითხვადობისთვის */
   margin: 0;
-  white-space: nowrap;
+  white-space: normal; /* ტექსტი გადადის, თუ არ ეტევა */
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .short-info h3 {
   font-size: 1rem;
+  margin-bottom: 4px;
+  font-weight: 600;
+  max-height: 2.4em; /* სათაური მაქსიმუმ 2 ხაზზე */
+  line-height: 1.2em;
 }
 .short-info p {
-    font-size: 0.8rem;
-}
-
-/* --- სტილები ანიმირებული ბიჭუნასთვის --- */
-.scrolling-wrapper::before {
-  content: ''; /* ემოჯის მაგივრად ვიყენებთ ცარიელ კონტენტს */
-  position: absolute;
-  top: -15px;
-  left: 0;
-  z-index: 20;
-
-  /* პერსონაჟის ზომები */
-  width: 80px;
-  height: 80px;
-
-  /* სპრაიტის სურათი */
-  background-image: url('https://i.ibb.co/Q8L52P7/boy-sprite-sheet.png');
-  background-repeat: no-repeat;
-  background-size: 640px 80px; /* სურათის სრული ზომა (8 კადრი * 80px) */
-
-  /* ორი ანიმაციის გაერთიანება: ერთი ნახტომისთვის, მეორე სირბილისთვის */
-  animation: 
-    jumper-hop 24s linear infinite,
-    run-cycle 0.6s steps(8) infinite; /* 8 კადრიანი ანიმაცია */
-}
-
-/* სირბილის ანიმაცია (კადრების ცვლილება) */
-@keyframes run-cycle {
-  from { background-position: 0 0; }
-  to { background-position: -640px 0; } /* სურათის ბოლომდე გადაწევა */
-}
-
-
-/* მოხტუნავე ბიჭუნას დახვეწილი ანიმაცია (ბრუნვის გარეშე) */
-@keyframes jumper-hop {
-  /* --- წიგნი 1 --- */
-  0% { transform: translateX(80px) translateY(0); }
-  6% { transform: translateX(80px) translateY(5px); } /* მომზადება */
-  12% { transform: translateX(calc(80px + 125px)) translateY(-70px); } /* ნახტომის პიკი */
-  16.66% { transform: translateX(calc(80px + 250px)) translateY(0); } /* დაშვება */
-
-  /* --- წიგნი 2 --- */
-  17.66% { transform: translateX(calc(80px + 250px)) translateY(-5px); } /* დაშვების ეფექტი */
-  22.66% { transform: translateX(calc(80px + 250px)) translateY(5px); }
-  28.66% { transform: translateX(calc(80px + 250px + 125px)) translateY(-70px); }
-  33.33% { transform: translateX(calc(80px + 500px)) translateY(0); }
-  
-  /* --- წიგნი 3 --- */
-  34.33% { transform: translateX(calc(80px + 500px)) translateY(-5px); }
-  39.33% { transform: translateX(calc(80px + 500px)) translateY(5px); }
-  45.33% { transform: translateX(calc(80px + 500px + 125px)) translateY(-70px); }
-  50% { transform: translateX(calc(80px + 750px)) translateY(0); }
-
-  /* --- წიგნი 4 --- */
-  51% { transform: translateX(calc(80px + 750px)) translateY(-5px); }
-  56% { transform: translateX(calc(80px + 750px)) translateY(5px); }
-  62% { transform: translateX(calc(80px + 750px + 125px)) translateY(-70px); }
-  66.66% { transform: translateX(calc(80px + 1000px)) translateY(0); }
-
-  /* --- წიგნი 5 --- */
-  67.66% { transform: translateX(calc(80px + 1000px)) translateY(-5px); }
-  72.66% { transform: translateX(calc(80px + 1000px)) translateY(5px); }
-  78.66% { transform: translateX(calc(80px + 1000px + 125px)) translateY(-70px); }
-  83.33% { transform: translateX(calc(80px + 1250px)) translateY(0); }
-
-  /* --- წიგნი 6 --- */
-  84.33% { transform: translateX(calc(80px + 1250px)) translateY(-5px); }
-  89.33% { transform: translateX(calc(80px + 1250px)) translateY(5px); }
-  95.33% { transform: translateX(calc(80px + 1250px + 125px)) translateY(-70px); }
-  100% { transform: translateX(calc(80px + 1500px)) translateY(0); }
+  font-size: 0.8rem;
+  opacity: 0.8;
+  max-height: 1.2em; /* ავტორი მაქსიმუმ 1 ხაზზე */
+  line-height: 1.2em;
 }
 

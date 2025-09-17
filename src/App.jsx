@@ -4,11 +4,15 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Books from './pages/Books';
 import About from './pages/about';
-import BookDetails from './pages/bookdetails'; // <-- 1. დამატებული იმპორტი
+import BookDetails from './pages/bookdetails';
 import ForYou from './pages/ForYou';
 import Intro from './components/Intro/Intro';
 import Banner from './components/Banner/banner';
 import AudioShorts from './components/AudioShorts/AudioShorts';
+
+// <-- 1. დაამატეთ ახალი კომპონენტის იმპორტი
+import CircularLayout from './components/CircularLayout/CircularLayout';
+
 import './App.css';
 
 function App() {
@@ -29,6 +33,10 @@ function App() {
                     <Intro />
                     <Banner />
                   </div>
+                  
+                  {/* <-- 2. აქ დავამატეთ ახალი კომპონენტი */}
+                  <CircularLayout />
+
                   <AudioShorts />
                 </>
               }
@@ -38,7 +46,6 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/for-you" element={<ForYou />} />
             
-            {/* ეს ხაზი ახლა გამართულად იმუშავებს */}
             <Route path="/books/:slug" element={<BookDetails />} />
 
           </Routes>
@@ -51,4 +58,3 @@ function App() {
 }
 
 export default App;
-

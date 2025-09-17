@@ -1,52 +1,29 @@
+// src/components/BookDetail.js
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './BookDetails.css'; // დაგვჭირდება სტილების ფაილი
+import './BookDetails.css';
+import Coda from './Coda'; // <-- 1. დააიმპორტე Coda კომპონენტი
 
-// ეს ფუნქცია ინახავს წიგნის slug-ს localStorage-ში
-const saveToRecentlyViewed = (book) => {
-  if (!book || !book.slug) return;
-
-  // 1. ვიღებთ არსებულ სიას localStorage-დან
-  const recentlyViewedRaw = localStorage.getItem('recentlyViewed');
-  let recentlyViewed = recentlyViewedRaw ? JSON.parse(recentlyViewedRaw) : [];
-
-  // 2. ვშლით ამ წიგნს სიიდან, თუ უკვე არსებობს (რომ თავში გადმოვიტანოთ)
-  recentlyViewed = recentlyViewed.filter(item => item.slug !== book.slug);
-
-  // 3. ვამატებთ ახალ წიგნს სიის დასაწყისში
-  recentlyViewed.unshift(book);
-
-  // 4. ვზღუდავთ სიის ზომას, მაგალითად, ბოლო 10 წიგნით
-  if (recentlyViewed.length > 10) {
-    recentlyViewed = recentlyViewed.slice(0, 10);
-  }
-
-  // 5. ვინახავთ განახლებულ სიას localStorage-ში
-  localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
-};
-
-
-function BookDetails() {
+function BookDetail() {
+  // ... (შენი state-ები და useEffect უცვლელი რჩება) ...
   const { slug } = useParams();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
-    const fetchBookDetails = async () => {
+    useEffect(() => {
+    const fetchBook = async () => {
       setLoading(true);
+      setError(null);
       try {
         const response = await fetch(`https://books-api-7hu5.onrender.com/books/${slug}`);
         if (!response.ok) {
-          throw new Error('წიგნის დეტალების ჩატვირთვისას მოხდა შეცდომა');
+          throw new Error('წიგნის ჩატვირთვისას მოხდა შეცდომა');
         }
         const data = await response.json();
         setBook(data.data);
-
-        // --- მთავარი ლოგიკა ---
-        // წიგნის დეტალების წარმატებით ჩატვირთვის შემდეგ, ვინახავთ მას
-        saveToRecentlyViewed(data.data);
-
       } catch (err) {
         setError(err.message);
       } finally {
@@ -54,27 +31,58 @@ function BookDetails() {
       }
     };
 
-    fetchBookDetails();
-  }, [slug]);
+    fetchBook();
+  }, [slug]); 
 
-  if (loading) return <div className="status-message">იტვირთება...</div>;
-  if (error) return <div className="status-message error">{error}</div>;
+  if (loading) return <div className="status-message">იტვირთება წიგნი...</div>;
+  if (error) return <div className="status-message error">შეცდომა: {error}</div>;
   if (!book) return <div className="status-message">წიგნი ვერ მოიძებნა.</div>;
 
+  const isLongSummary = book.summary && book.summary.length > 300;
+  const toggleReadMore = () => {
+    setIsExpanded(!isExpanded);
+  };
+  
+
+  
   return (
-    <div className="book-details-page">
-      <div className="book-details-container">
-        <img src={book.imageUrl || 'https://placehold.co/400x600/eee/ccc?text=No%20Image'} alt={book.title} className="book-cover" />
-        <div className="book-content">
+    <div className="book-detail-page">
+      <div className="book-detail-container">
+        <img 
+          src={book.imageUrl || 'https://placehold.co/300x450/eee/ccc?text=No%20Image'} 
+          alt={book.title} 
+          className="book-detail-cover"
+        />
+        <div className="book-detail-info">
           <h1>{book.title}</h1>
           <h2>{book.author}</h2>
-          <p className="book-description">{book.description || "აღწერა არ მოიძებნა."}</p>
-          {/* აქ შეიძლება დაემატოს სხვა დეტალები: კატეგორია, გამოცემის წელი და ა.შ. */}
+          
+          {/* --- ⭐ 2. ჩავსვით Coda კომპონენტი აქ --- */}
+          {/* ჩაანაცვლე book.coda იმ სახელით, რომელიც კონსოლში ნახე! */}
+          <Coda text={book.coda} />
+
+          {book.summary ? (
+            <div className="book-summary-section">
+              <h3>აღწერა</h3>
+              <p>
+                {isLongSummary && !isExpanded
+                  ? `${book.summary.substring(0, 300)}...`
+                  : book.summary
+                }
+              </p>
+              {isLongSummary && (
+                <button onClick={toggleReadMore} className="read-more-btn">
+                  {isExpanded ? 'შეკეცვა' : 'სრულად წაკითხვა'}
+                </button>
+              )}
+            </div>
+          ) : (
+            <p>ამ წიგნს აღწერა არ აქვს.</p>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default BookDetails;
-
+export default BookDetail;

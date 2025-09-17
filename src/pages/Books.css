@@ -70,3 +70,52 @@
   text-decoration: none; /* ვუშლით სტანდარტულ ხაზგასმას */
   color: inherit;      /* ვაიძულებთ, რომ ტექსტის ფერი იყოს იგივე, რაც მშობლის */
 }
+.book-card-summary {
+  font-size: 14px;
+  color: #666; /* ოდნავ უფრო ღია ფერი */
+  margin-top: 8px;
+  line-height: 1.4;
+  
+  /* ეს თვისებები უზრუნველყოფს, რომ ტექსტი მაქსიმუმ 3 ხაზზე განთავსდეს */
+  display: -webkit-box;
+  
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Books.css-ში დასამატებელი სტილები */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap; /* მობილურისთვის */
+  gap: 1rem;
+}
+
+.filters-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filters-container label {
+  font-weight: 500;
+  color: #555;
+}
+
+.filters-container select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.filters-container select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
