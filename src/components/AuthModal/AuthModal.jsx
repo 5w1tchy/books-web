@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/useAuth'; // <-- იმპორტი useAuth.js-დან
+import { useAuth } from '../../context/useAuth';
 import './AuthModal.css';
 
 const AuthModal = ({ type, onClose, onSwitch }) => {
@@ -9,16 +9,21 @@ const AuthModal = ({ type, onClose, onSwitch }) => {
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, label: '', color: '' });
+  const [backendWarning, setBackendWarning] = useState(null);
 
   const { login, register } = useAuth();
   const [currentType, setCurrentType] = useState(type);
 
   useEffect(() => {
     setCurrentType(type);
+    // ვასუფთავებთ ველებს და შეცდომებს ტიპის შეცვლისას
+    setEmail('');
+    setUsername('');
+    setPassword('');
     setErrors({});
     setApiError(null);
+    setBackendWarning(null);
   }, [type]);
 
   useEffect(() => {
@@ -31,56 +36,34 @@ const AuthModal = ({ type, onClose, onSwitch }) => {
 
   const checkPasswordStrength = (pass) => {
     let score = 0;
-    let label = '';
-    let color = '';
-
     if (!pass) {
       setPasswordStrength({ score: 0, label: '', color: '' });
       return;
     }
-    
     if (pass.length >= 8) score++;
     if (pass.length >= 12) score++;
-    if (/[a-z]/.test(pass)) score++;
     if (/[A-Z]/.test(pass)) score++;
-    if (/\d]/.test(pass)) score++;
+    if (/\d/.test(pass)) score++;
     if (/[^a-zA-Z0-9]/.test(pass)) score++;
 
-    const finalScore = Math.min(Math.floor(score / 1.5), 4);
-
-    switch (finalScore) {
-      case 1:
-        label = 'ძალიან სუსტი';
-        color = '#e74c3c';
-        break;
-      case 2:
-        label = 'სუსტი';
-        color = '#f1c40f';
-        break;
-      case 3:
-        label = 'საშუალო';
-        color = '#2ecc71';
-        break;
-      case 4:
-        label = 'ძლიერი';
-        color = '#27ae60';
-        break;
-      default:
-        label = '';
-    }
-    setPasswordStrength({ score: finalScore, label, color });
+    const finalScore = Math.min(Math.floor(score / 1.2), 4);
+    const strengthLevels = [
+      { label: '', color: '' },
+      { label: 'ძალიან სუსტი', color: '#e74c3c' },
+      { label: 'სუსტი', color: '#f1c40f' },
+      { label: 'საშუალო', color: '#2ecc71' },
+      { label: 'ძლიერი', color: '#27ae60' },
+    ];
+    setPasswordStrength({ score: finalScore, ...strengthLevels[finalScore] });
   };
   
   const validateForm = () => {
     const newErrors = {};
     if (!email) newErrors.email = 'ელ. ფოსტის ველი სავალდებულოა.';
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'გთხოვთ, მიუთითოთ კორექტული ელ. ფოსტა.';
-    
     if (currentType === 'register' && !username) newErrors.username = 'მომხმარებლის სახელის ველი სავალდებულოა.';
-    
     if (!password) newErrors.password = 'პაროლის ველი სავალდებულოა.';
     else if (currentType === 'register' && password.length < 8) newErrors.password = 'პაროლი უნდა შედგებოდეს მინიმუმ 8 სიმბოლოსგან.';
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -88,15 +71,22 @@ const AuthModal = ({ type, onClose, onSwitch }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setApiError(null);
+    setBackendWarning(null);
     if (!validateForm()) return;
     setIsLoading(true);
     try {
       if (currentType === 'login') {
         await login(email, password);
+        onClose();
       } else {
-        await register({ email, username, password });
+        const responseData = await register({ email, username, password });
+        
+        if (responseData.password_warning) {
+          setBackendWarning(responseData.password_warning);
+        } else {
+          onClose();
+        }
       }
-      onClose();
     } catch (err) {
       setApiError(err.message);
     } finally {
@@ -112,56 +102,71 @@ const AuthModal = ({ type, onClose, onSwitch }) => {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>&times;</button>
         <h2>{isLogin ? 'ავტორიზაცია' : 'რეგისტრაცია'}</h2>
-        <form onSubmit={handleSubmit} noValidate>
-          {apiError && <p className="api-error-message">{apiError}</p>}
-          <div className="form-group">
-            <label htmlFor="email">ელ. ფოსტა</label>
-            <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            {errors.email && <p className="validation-error">{errors.email}</p>}
+        
+        {backendWarning ? (
+          <div className="backend-warning">
+            <h4>რეგისტრაცია წარმატებულია, მაგრამ...</h4>
+            <p>{backendWarning.message}</p>
+            {backendWarning.suggestions && (
+              <ul>
+                {backendWarning.suggestions.map((s, i) => <li key={i}>{s}</li>)}
+              </ul>
+            )}
+            <button onClick={onClose} className="submit-btn">გასაგებია</button>
           </div>
-          {!isLogin && (
+        ) : (
+          <form onSubmit={handleSubmit} noValidate>
+            {apiError && <p className="api-error-message">{apiError}</p>}
             <div className="form-group">
-              <label htmlFor="username">მომხმარებლის სახელი</label>
-              <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-              {errors.username && <p className="validation-error">{errors.username}</p>}
+              <label htmlFor="email">ელ. ფოსტა</label>
+              <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              {errors.email && <p className="validation-error">{errors.email}</p>}
             </div>
-          )}
-          <div className="form-group">
-            <label htmlFor="password">პაროლი</label>
-            <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            {errors.password && <p className="validation-error">{errors.password}</p>}
-            
-            {!isLogin && password.length > 0 && (
-              <div className="password-strength-meter">
-                <div className="strength-bars">
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="strength-bar"
-                      style={{
-                        backgroundColor: index < passwordStrength.score ? passwordStrength.color : '#eee',
-                      }}
-                    ></div>
-                  ))}
-                </div>
-                {passwordStrength.label && (
-                  <span className="password-feedback" style={{ color: passwordStrength.color }}>
-                    {passwordStrength.label}
-                  </span>
-                )}
+            {!isLogin && (
+              <div className="form-group">
+                <label htmlFor="username">მომხმარებლის სახელი</label>
+                <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                {errors.username && <p className="validation-error">{errors.username}</p>}
               </div>
             )}
-          </div>
-          <button type="submit" className="submit-btn" disabled={isLoading}>
-            {isLoading ? 'იტვირთება...' : (isLogin ? 'შესვლა' : 'რეგისტრაცია')}
-          </button>
-        </form>
-        <p className="switch-form-text">
-          {isLogin ? "არ გაქვთ ანგარიში?" : "უკვე გაქვთ ანგარიში?"}
-          <button type="button" onClick={handleSwitch} className="switch-form-btn">
-            {isLogin ? "რეგისტრაცია" : "ავტორიზაცია"}
-          </button>
-        </p>
+            <div className="form-group">
+              <label htmlFor="password">პაროლი</label>
+              <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              {errors.password && <p className="validation-error">{errors.password}</p>}
+              
+              {!isLogin && password.length > 0 && (
+                <div className="password-strength-meter">
+                  <div className="strength-bars">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <div
+                        key={index}
+                        className="strength-bar"
+                        style={{ backgroundColor: index < passwordStrength.score ? passwordStrength.color : '#eee' }}
+                      ></div>
+                    ))}
+                  </div>
+                  {passwordStrength.label && (
+                    <span className="password-feedback" style={{ color: passwordStrength.color }}>
+                      {passwordStrength.label}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            <button type="submit" className="submit-btn" disabled={isLoading}>
+              {isLoading ? 'იტვირთება...' : (isLogin ? 'შესვლა' : 'რეგისტრაცია')}
+            </button>
+          </form>
+        )}
+
+        {!backendWarning && (
+          <p className="switch-form-text">
+            {isLogin ? "არ გაქვთ ანგარიში?" : "უკვე გაქვთ ანგარიში?"}
+            <button onClick={handleSwitch} className="switch-form-btn">
+              {isLogin ? "რეგისტრაცია" : "ავტორიზაცია"}
+            </button>
+          </p>
+        )}
       </div>
     </div>
   );
