@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import AuthModal from '../AuthModal/AuthModal';
+import { useAuth } from '../../context/useAuth'; // <-- შეცვლილი იმპორტი
 
 const Header = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,6 +12,9 @@ const Header = ({ onSearch }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalType, setModalType] = useState(null);
   const navigate = useNavigate();
+
+  // ვიღებთ მომხმარებლის ინფორმაციას და logout ფუნქციას კონტექსტიდან
+  const { user, logout, loading } = useAuth();
 
   useEffect(() => {
     if (isSearchActive) {
@@ -80,8 +84,11 @@ const Header = ({ onSearch }) => {
   const handleBlur = () => {
     setTimeout(() => {
       setIsSearchActive(false);
-    }, 150); // მცირე დაყოვნება, რომ კლიკმა მოსწროს
+    }, 150);
   };
+
+  const handleModalClose = () => setModalType(null);
+  const handleSwitchModal = (type) => setModalType(type);
 
   return (
     <>
@@ -98,10 +105,8 @@ const Header = ({ onSearch }) => {
               <button className="nav-button">მენიუ</button>
               <ul className="dropdown-menu">
                 <li><Link to="/books">წიგნები</Link></li>
-                <li><a href="#soon1">მალე 1</a></li>
-                {/* --- დამატებული და გადალაგებული პუნქტები --- */}
                 <li><Link to="/for-you">შენთვის</Link></li>
-                <li><a href="#soon2">მალე 2</a></li>
+                <li><Link to="/contact">კონტაქტი</Link></li>
                 <li><Link to="/about">ჩვენს შესახებ</Link></li>
               </ul>
             </li>
@@ -151,15 +156,28 @@ const Header = ({ onSearch }) => {
         </div>
 
         <div className="auth-buttons">
-          <button onClick={() => setModalType('login')} className="auth-btn login-btn">ავტორიზაცია</button>
-          <button onClick={() => setModalType('register')} className="auth-btn register-btn">რეგისტრაცია</button>
+            {/* ვამოწმებთ, მომხმარებელი ავტორიზებულია თუ არა */}
+            {!loading && (
+              user ? (
+                <>
+                  <span className="welcome-message">გამარჯობა, {user.username}!</span>
+                  <button onClick={logout} className="auth-btn logout-btn">გასვლა</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => setModalType('login')} className="auth-btn login-btn">ავტორიზაცია</button>
+                  <button onClick={() => setModalType('register')} className="auth-btn register-btn">რეგისტრაცია</button>
+                </>
+              )
+            )}
         </div>
       </header>
 
       {modalType && (
         <AuthModal
           type={modalType}
-          onClose={() => setModalType(null)}
+          onClose={handleModalClose}
+          onSwitch={handleSwitchModal}
         />
       )}
     </>

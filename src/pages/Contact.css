@@ -1,0 +1,141 @@
+.contact-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  text-align: center;
+  animation: pageFadeIn 0.5s ease-in-out;
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.contact-title {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.contact-subtitle {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin-bottom: 60px;
+}
+
+.contact-info-container {
+  position: relative;
+  width: 300px; /* გავზარდეთ ზომა */
+  height: 300px; /* გავზარდეთ ზომა */
+  margin: 0 auto 80px auto;
+  border: 2px dashed #cccccc; /* დავამატეთ წრიული ხაზი */
+  border-radius: 50%; /* დავამრგვალეთ კონტეინერი */
+}
+
+.icon-wrapper {
+  position: absolute;
+  text-decoration: none;
+}
+
+.icon-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #007bff;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.icon-wrapper svg {
+  width: 32px;
+  height: 32px;
+  stroke: #007bff;
+  transition: stroke 0.3s ease;
+}
+
+.icon-wrapper:hover .icon-circle {
+  transform: translateY(-10px);
+  background-color: #007bff;
+  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.3);
+}
+
+.icon-wrapper:hover svg {
+  stroke: #ffffff;
+}
+
+/* იკონკების პოზიციონირება წრიულ ხაზზე */
+.phone-wrapper {
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%); /* ცენტრირება ხაზის კიდეზე */
+}
+
+.location-wrapper {
+  top: 50%;
+  right: 0;
+  transform: translate(50%, -50%); /* ცენტრირება ხაზის კიდეზე */
+}
+
+.email-wrapper {
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%); /* ცენტრირება ხაზის კიდეზე */
+}
+
+/* ინფორმაციის ბლოკი, რომელიც ჩნდება მაუსის მიტანისას */
+.info-box {
+  position: absolute;
+  background-color: #34495e;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.icon-wrapper:hover .info-box {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* ინფორმაციის ბლოკების პოზიციონირება */
+.phone-wrapper .info-box {
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.location-wrapper .info-box {
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.email-wrapper .info-box {
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 15px;
+  transform: translateX(-50%);
+}
+
+.map-container {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.map-container iframe {
+  display: block;
+}
+

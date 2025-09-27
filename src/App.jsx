@@ -9,9 +9,10 @@ import ForYou from './pages/ForYou';
 import Intro from './components/Intro/Intro';
 import Banner from './components/Banner/banner';
 import AudioShorts from './components/AudioShorts/AudioShorts';
-
-// <-- 1. დაამატეთ ახალი კომპონენტის იმპორტი
 import CircularLayout from './components/CircularLayout/CircularLayout';
+import Contact from './pages/Contact';
+// 1. AuthProvider-ის იმპორტი
+import { AuthProvider } from './context/AuthContext';
 
 import './App.css';
 
@@ -19,42 +20,41 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
 
   return (
-    <Router>
-      <div className="app-container">
-        <Header onSearch={setSearchTerm} />
+    // 2. აპლიკაციას ვფუთავთ AuthProvider-ით
+    <AuthProvider>
+      <Router>
+        <div className="app-container">
+          <Header onSearch={setSearchTerm} />
 
-        <main className="main-content">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <>
-                  <div className="home-layout">
-                    <Intro />
-                    <Banner />
-                  </div>
-                  
-                  {/* <-- 2. აქ დავამატეთ ახალი კომპონენტი */}
-                  <CircularLayout />
+          <main className="main-content">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <div className="home-layout">
+                      <Intro />
+                      <Banner />
+                    </div>
+                    <CircularLayout />
+                    <AudioShorts />
+                  </>
+                }
+              />
+              <Route path="/books" element={<Books searchTerm={searchTerm} />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/for-you" element={<ForYou />} />
+              <Route path="/books/:slug" element={<BookDetails />} />
+              <Route path="/contact" element={<Contact />} /> {/* <-- დაამატეთ ეს ხაზი */}
+            </Routes>
+          </main>
 
-                  <AudioShorts />
-                </>
-              }
-            />
-
-            <Route path="/books" element={<Books searchTerm={searchTerm} />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/for-you" element={<ForYou />} />
-            
-            <Route path="/books/:slug" element={<BookDetails />} />
-
-          </Routes>
-        </main>
-
-        <Footer />
-      </div>
-    </Router>
+          <Footer />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 
 export default App;
+

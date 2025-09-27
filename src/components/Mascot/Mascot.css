@@ -1,0 +1,38 @@
+/* src/components/Mascot/Mascot.css */
+
+.mascot-container {
+  /* პოზიციონირება სხვა ელემენტების თავზე */
+  position: fixed;
+  z-index: 9999; /* მაღალი z-index, რომ ყოველთვის ზემოდან იყოს */
+  
+  /* ზომები - შეცვალეთ თქვენი სურათის მიხედვით */
+  width: 100px;
+  height: 100px;
+
+  /* რბილი მოძრაობის ანიმაცია (3 წამი) - დავამატეთ transform */
+  transition: top 3s ease-in-out, left 3s ease-in-out, transform 3s ease-in-out;
+  
+  /* ეს თვისება საშუალებას აძლევს მომხმარებელს, დააჭიროს ბიჯუნას უკან არსებულ ელემენტებს */
+  pointer-events: none;
+}
+
+.mascot-image {
+  width: 100%;
+  height: auto;
+  /* ჰაერში ტივტივის ეფექტი */
+  animation: floatAnimation 6s ease-in-out infinite;
+}
+
+/* ტივტივის ანიმაცია */
+@keyframes floatAnimation {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+

@@ -71,8 +71,8 @@
   z-index: 1000;
   transform: translateY(10px);
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-  
-  /* დამატებულია ვერტიკალური განლაგების უზრუნველსაყოფად */
+
+  /* დამატებითი ვერტიკალური განლაგების უზრუნველსაყოფად */
   display: flex;
   flex-direction: column;
 }
@@ -109,6 +109,7 @@
   /* ***მთავარი ცვლილება***: ეს აიძულებს საძიებო ველს, დაიკავოს მთელი თავისუფალი ადგილი და მოექცეს ცენტრში */
   margin: 0 auto;
 }
+
 
 .search-icon-button {
   background: transparent;
