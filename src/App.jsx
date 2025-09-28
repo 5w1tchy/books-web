@@ -11,49 +11,51 @@ import Banner from './components/Banner/banner';
 import AudioShorts from './components/AudioShorts/AudioShorts';
 import CircularLayout from './components/CircularLayout/CircularLayout';
 import Contact from './pages/Contact';
-// 1. AuthProvider-ის იმპორტი
+// AuthProvider-ის და Faq-ის იმპორტი
 import { AuthProvider } from './context/AuthContext';
+import Faq from './components/Faq/Faq';
 
 import './App.css';
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  return (
-    // 2. აპლიკაციას ვფუთავთ AuthProvider-ით
-    <AuthProvider>
-      <Router>
-        <div className="app-container">
-          <Header onSearch={setSearchTerm} />
+  return (
+    // აპლიკაციას ვფუთავთ AuthProvider-ით
+    <AuthProvider>
+      <Router>
+        <div className="app-container">
+          <Header onSearch={setSearchTerm} />
 
-          <main className="main-content">
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <>
-                    <div className="home-layout">
-                      <Intro />
-                      <Banner />
-                    </div>
-                    <CircularLayout />
-                    <AudioShorts />
-                  </>
-                }
-              />
-              <Route path="/books" element={<Books searchTerm={searchTerm} />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/for-you" element={<ForYou />} />
-              <Route path="/books/:slug" element={<BookDetails />} />
-              <Route path="/contact" element={<Contact />} /> {/* <-- დაამატეთ ეს ხაზი */}
-            </Routes>
-          </main>
+          <main className="main-content">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <div className="home-layout">
+                      <Intro />
+                      <Banner />
+                    </div>
+                    <CircularLayout />
+                    <AudioShorts />
+                  <Faq /> {/* <-- დამატებულია FAQ სექცია */}
+                  </>
+                }
+              />
+              <Route path="/books" element={<Books searchTerm={searchTerm} />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/for-you" element={<ForYou />} />
+              <Route path="/books/:slug" element={<BookDetails />} />
+              <Route path="/contact" element={<Contact />} />
+            </Routes>
+          </main>
 
-          <Footer />
-        </div>
-      </Router>
-    </AuthProvider>
-  );
+          <Footer />
+        </div>
+      </Router>
+    </AuthProvider>
+  );
 }
 
 export default App;

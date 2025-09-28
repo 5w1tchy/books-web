@@ -1,0 +1,99 @@
+/* src/components/Faq/Faq.css */
+
+.faq-section {
+  max-width: 800px;
+  margin: 60px auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.faq-section h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2.5rem;
+  color: #333;
+}
+
+.faq-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.faq-item {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-question {
+  width: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  border: none;
+  text-align: left;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #444;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.faq-question:hover {
+  background-color: #f9f9f9;
+}
+
+.faq-question.active {
+  color: #3498db;
+}
+
+.faq-icon {
+  font-size: 1.5rem;
+  font-weight: 300;
+  transition: transform 0.3s ease-in-out;
+}
+
+.faq-question.active .faq-icon {
+  transform: rotate(135deg);
+}
+
+.faq-answer {
+  background-color: #fdfdfd;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+
+.faq-answer.open {
+  max-height: 200px; /* საკმარისად დიდი სიმაღლე, რომ ტექსტი ჩაეტიოს */
+}
+
+.faq-answer-content {
+  padding: 20px;
+  color: #555;
+  line-height: 1.6;
+  border-top: 1px dashed #e0e0e0;
+}
+
+.faq-support-text {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 1rem;
+  color: #666;
+}
+
+.faq-support-text a {
+  color: #3498db;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.faq-support-text a:hover {
+  text-decoration: underline;
+}
