@@ -11,51 +11,64 @@ import Banner from './components/Banner/banner';
 import AudioShorts from './components/AudioShorts/AudioShorts';
 import CircularLayout from './components/CircularLayout/CircularLayout';
 import Contact from './pages/Contact';
-// AuthProvider-ის და Faq-ის იმპორტი
 import { AuthProvider } from './context/AuthContext';
 import Faq from './components/Faq/Faq';
+
+// --- 1. ახალი კომპონენტების იმპორტი ---
+import Admin from './pages/Admin';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 
 import './App.css';
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  return (
-    // აპლიკაციას ვფუთავთ AuthProvider-ით
-    <AuthProvider>
-      <Router>
-        <div className="app-container">
-          <Header onSearch={setSearchTerm} />
+  return (
+    <AuthProvider>
+      <Router>
+        <div className="app-container">
+          <Header onSearch={setSearchTerm} />
 
-          <main className="main-content">
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <>
-                    <div className="home-layout">
-                      <Intro />
-                      <Banner />
-                    </div>
-                    <CircularLayout />
-                    <AudioShorts />
-                  <Faq /> {/* <-- დამატებულია FAQ სექცია */}
-                  </>
-                }
-              />
-              <Route path="/books" element={<Books searchTerm={searchTerm} />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/for-you" element={<ForYou />} />
-              <Route path="/books/:slug" element={<BookDetails />} />
-              <Route path="/contact" element={<Contact />} />
-            </Routes>
-          </main>
+          <main className="main-content">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <div className="home-layout">
+                      <Intro />
+                      <Banner />
+                    </div>
+                    <CircularLayout />
+                    <AudioShorts />
+                    <Faq />
+                  </>
+                }
+              />
+              <Route path="/books" element={<Books searchTerm={searchTerm} />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/for-you" element={<ForYou />} />
+              <Route path="/books/:slug" element={<BookDetails />} />
+              <Route path="/contact" element={<Contact />} />
 
-          <Footer />
-        </div>
-      </Router>
-    </AuthProvider>
-  );
+              {/* --- 2. დაცული ადმინის როუტის დამატება --- */}
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <Admin />
+                  </ProtectedRoute>
+                }
+              />
+
+            </Routes>
+          </main>
+
+          <Footer />
+        </div>
+      </Router>
+    </AuthProvider>
+  );
 }
 
 export default App;

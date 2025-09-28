@@ -108,6 +108,7 @@ const Header = ({ onSearch }) => {
                 <li><Link to="/for-you">შენთვის</Link></li>
                 <li><Link to="/contact">კონტაქტი</Link></li>
                 <li><Link to="/about">ჩვენს შესახებ</Link></li>
+                {user && user.status === 'admin' && ( <li><Link to="/admin">ადმინისტრირება</Link></li> )}
               </ul>
             </li>
           </ul>
@@ -183,6 +184,7 @@ const Header = ({ onSearch }) => {
     </>
   );
 };
+
 
 export default Header;
 
