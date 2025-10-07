@@ -1,30 +1,27 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/useAuth';
+import { Navigate } from 'react-router-dom';
 
-// ეს კომპონენტი ამოწმებს, აქვს თუ არა მომხმარებელს გვერდზე წვდომის უფლება
 const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { user, loading } = useAuth();
-  const location = useLocation();
+  const token = localStorage.getItem('token');
+  const userData = localStorage.getItem('user');
 
-  // სანამ ვამოწმებთ ავტორიზაციას, ვაჩვენებთ ჩატვირთვის ინდიკატორს
-  if (loading) {
-    return <div className="status-message">იტვირთება...</div>;
+  // თუ token არ არის, გადაამისამართე ლოგინზე
+  if (!token) {
+    return <Navigate to="/admin/login" replace />;
   }
 
-  // თუ მომხმარებელი არ არის ავტორიზებული, გადავამისამართებთ მთავარ გვერდზე
-  if (!user) {
-    return <Navigate to="/" state={{ from: location }} replace />;
+  // თუ adminOnly არის true, შეამოწმე admin როლი
+  if (adminOnly && userData) {
+    try {
+      const user = JSON.parse(userData);
+      if (user.role !== 'admin') {
+        return <Navigate to="/" replace />;
+      }
+    } catch (error) {
+      return <Navigate to="/admin/login" replace />;
+    }
   }
 
-  // თუ გვერდი მხოლოდ ადმინისთვისაა და მომხმარებელს არ აქვს 'admin' სტატუსი
-  // (თქვენი API-დან /auth/me პასუხის მიხედვით)
-  if (adminOnly && user.status !== 'admin') {
-    // გადავამისამართებთ მთავარ გვერდზე
-    return <Navigate to="/" replace />;
-  }
-
-  // თუ ყველა პირობა დაკმაყოფილებულია, ვაჩვენებთ დაცულ გვერდს
   return children;
 };
 

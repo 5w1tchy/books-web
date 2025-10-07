@@ -108,7 +108,10 @@ const Header = ({ onSearch }) => {
                 <li><Link to="/for-you">შენთვის</Link></li>
                 <li><Link to="/contact">კონტაქტი</Link></li>
                 <li><Link to="/about">ჩვენს შესახებ</Link></li>
-                {user && user.status === 'admin' && ( <li><Link to="/admin">ადმინისტრირება</Link></li> )}
+                {/* შეცვლილი - role შემოწმება user.status-ის ნაცვლად */}
+                {user && user.role === 'admin' && ( 
+                  <li><Link to="/admin">⚙️ ადმინისტრირება</Link></li> 
+                )}
               </ul>
             </li>
           </ul>
@@ -162,6 +165,25 @@ const Header = ({ onSearch }) => {
               user ? (
                 <>
                   <span className="welcome-message">გამარჯობა, {user.username}!</span>
+                  {/* ადმინის პანელის ღილაკი - მხოლოდ ადმინებისთვის */}
+                  {user.role === 'admin' && (
+                    <Link 
+                      to="/admin" 
+                      className="auth-btn admin-btn"
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        textDecoration: 'none',
+                        marginRight: '10px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        fontSize: '14px'
+                      }}
+                    >
+                      ⚙️ ადმინი
+                    </Link>
+                  )}
                   <button onClick={logout} className="auth-btn logout-btn">გასვლა</button>
                 </>
               ) : (
@@ -185,6 +207,4 @@ const Header = ({ onSearch }) => {
   );
 };
 
-
 export default Header;
-

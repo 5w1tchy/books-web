@@ -1,20 +1,113 @@
-const raw = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-export const API_BASE = raw.replace(/\/+$/, '');
+// 1. შენი ნამდვილი backend URL
+const API_BASE_URL = 'https://books-api-7hu5.onrender.com';
 
-async function okText(res) {
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-    return res.text();
-}
+// Token-ის მიღება
+const getToken = () => localStorage.getItem('token');
 
-async function okJSON(res) {
-    if (!res.ok) {
-        const t = await res.text().catch(() => '');
-        throw new Error(`${res.status} ${res.statusText}: ${t}`);
+// API Request wrapper
+const apiRequest = async (url, options = {}) => {
+  const token = getToken();
+  
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...options.headers,
+    },
+    ...options,
+  };
+
+  try {
+    const response = await fetch(`${API_BASE_URL}${url}`, config);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return res.json();
-}
+    
+    return await response.json();
+  } catch (error) {
+    console.error('API Request failed:', error);
+    throw error;
+  }
+};
 
-export const api = {
-    health: () => fetch(`${API_BASE}/healthz`, { method: 'GET', mode: 'cors' }).then(okText),
-    listBooks: () => fetch(`${API_BASE}/books/`, { method: 'GET', mode: 'cors' }).then(okJSON),
+// Admin API functions
+export const adminAPI = {
+  // სტატისტიკა
+  getStats: () => apiRequest('/admin/stats'),
+  
+  // მომხმარებლები
+  getUsers: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return apiRequest(`/admin/users?${queryString}`);
+  },
+  
+  getUser: (id) => apiRequest(`/admin/users/${id}`),
+  
+  banUser: (id) => apiRequest(`/admin/users/${id}/ban`, { method: 'POST' }),
+  
+  unbanUser: (id) => apiRequest(`/admin/users/${id}/unban`, { method: 'POST' }),
+  
+  setUserRole: (id, role) => apiRequest(`/admin/users/${id}/role`, {
+    method: 'POST',
+    body: JSON.stringify({ role })
+  }),
+  
+  // წიგნები
+  getBooks: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return apiRequest(`/admin/books?${queryString}`);
+  },
+  
+  getBook: (key) => apiRequest(`/admin/books/${key}`),
+  
+  createBook: (bookData) => apiRequest('/admin/books', {
+    method: 'POST',
+    body: JSON.stringify(bookData)
+  }),
+  
+  updateBook: (key, bookData) => apiRequest(`/admin/books/${key}`, {
+    method: 'PATCH',
+    body: JSON.stringify(bookData)
+  }),
+  
+  deleteBook: (key) => apiRequest(`/admin/books/${key}`, { method: 'DELETE' }),
+  
+  // კატეგორიები და ავტორები
+  getCategories: () => apiRequest('/admin/categories'),
+  getAuthors: () => apiRequest('/admin/authors'),
+  
+  // აუდიტ ლოგი
+  getAuditLog: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return apiRequest(`/admin/audit?${queryString}`);
+  }
+};
+
+// ავტორიზაცია
+export const authAPI = {
+  login: (credentials) => fetch(`${API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(credentials)
+  }).then(res => res.json())
+};
+
+// ძირითადი წიგნების API (ჩვეულებრივი მომხმარებლებისთვის)
+export const booksAPI = {
+  // ყველა წიგნი
+  getBooks: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return apiRequest(`/books?${queryString}`);
+  },
+  
+  // კონკრეტული წიგნი
+  getBook: (key) => apiRequest(`/books/${key}`),
+  
+  // ძებნა
+  searchBooks: (query, params = {}) => {
+    const allParams = { q: query, ...params };
+    const queryString = new URLSearchParams(allParams).toString();
+    return apiRequest(`/books?${queryString}`);
+  }
 };
