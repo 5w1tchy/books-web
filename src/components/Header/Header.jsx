@@ -1,8 +1,9 @@
+// src/components/Header/Header.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import AuthModal from '../AuthModal/AuthModal';
-import { useAuth } from '../../context/useAuth'; // <-- შეცვლილი იმპორტი
+import { useAuth } from '../../context/useAuth';
 
 const Header = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,51 +14,30 @@ const Header = ({ onSearch }) => {
   const [modalType, setModalType] = useState(null);
   const navigate = useNavigate();
 
-  // ვიღებთ მომხმარებლის ინფორმაციას და logout ფუნქციას კონტექსტიდან
   const { user, logout, loading } = useAuth();
 
   useEffect(() => {
-    if (isSearchActive) {
-      setTimeout(() => searchInputRef.current?.focus(), 0);
-    }
+    if (isSearchActive) setTimeout(() => searchInputRef.current?.focus(), 0);
   }, [isSearchActive]);
 
+  // Suggestion API
   useEffect(() => {
-    if (searchTerm.length < 2) {
-      setSuggestions([]);
-      return;
-    }
-
-    const debounceTimer = setTimeout(() => {
-      const fetchSuggestions = async () => {
+    if (searchTerm.length < 2) return setSuggestions([]);
+    const timer = setTimeout(async () => {
+      try {
         setIsLoading(true);
-        try {
-          const response = await fetch(`https://books-api-7hu5.onrender.com/search/suggest?q=${searchTerm}&limit=10`);
-          if (!response.ok) {
-            throw new Error('API response was not ok.');
-          }
-          const data = await response.json();
-          if (data.status === 'success' && Array.isArray(data.data)) {
-            setSuggestions(data.data);
-          } else {
-            setSuggestions([]);
-          }
-        } catch (error) {
-          console.error("შემოთავაზებების ჩატვირთვისას მოხდა ერორი:", error);
-          setSuggestions([]);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchSuggestions();
+        const res = await fetch(`https://books-api-7hu5.onrender.com/search/suggest?q=${searchTerm}&limit=10`);
+        const data = await res.json();
+        setSuggestions(data?.data || []);
+      } catch (err) {
+        console.error(err);
+        setSuggestions([]);
+      } finally {
+        setIsLoading(false);
+      }
     }, 300);
-
-    return () => clearTimeout(debounceTimer);
+    return () => clearTimeout(timer);
   }, [searchTerm]);
-
-  const handleChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
 
   const handleSuggestionClick = (item) => {
     setSearchTerm('');
@@ -69,24 +49,15 @@ const Header = ({ onSearch }) => {
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      if (searchTerm.length > 0) {
-        if (onSearch) {
-          onSearch(searchTerm);
-        }
-        setSearchTerm('');
-        setSuggestions([]);
-        setIsSearchActive(false);
-        navigate('/books');
-      }
+      if (onSearch) onSearch(searchTerm);
+      setSearchTerm('');
+      setSuggestions([]);
+      setIsSearchActive(false);
+      navigate('/books');
     }
   };
-  
-  const handleBlur = () => {
-    setTimeout(() => {
-      setIsSearchActive(false);
-    }, 150);
-  };
 
+  const handleBlur = () => setTimeout(() => setIsSearchActive(false), 150);
   const handleModalClose = () => setModalType(null);
   const handleSwitchModal = (type) => setModalType(type);
 
@@ -108,9 +79,8 @@ const Header = ({ onSearch }) => {
                 <li><Link to="/for-you">შენთვის</Link></li>
                 <li><Link to="/contact">კონტაქტი</Link></li>
                 <li><Link to="/about">ჩვენს შესახებ</Link></li>
-                {/* შეცვლილი - role შემოწმება user.status-ის ნაცვლად */}
-                {user && user.role === 'admin' && ( 
-                  <li><Link to="/admin">⚙️ ადმინისტრირება</Link></li> 
+                {user && user.role === 'admin' && (
+                  <li><Link to="/admin">⚙️ ადმინისტრირება</Link></li>
                 )}
               </ul>
             </li>
@@ -121,78 +91,45 @@ const Header = ({ onSearch }) => {
           <button
             className="search-icon-button"
             onClick={() => setIsSearchActive(true)}
-            aria-label="ძიების ველის გახსნა"
-          >
-            <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          </button>
+          >🔍</button>
           <input
             ref={searchInputRef}
             type="text"
             placeholder="ძიება..."
             value={searchTerm}
-            onChange={handleChange}
+            onChange={e => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
           />
           {isLoading && <div className="loading-spinner"></div>}
-          {isSearchActive && searchTerm.length >= 2 && (
+          {isSearchActive && suggestions.length > 0 && (
             <ul className="suggestions-list">
-              {suggestions.length > 0 ? (
-                suggestions.map((item) => (
-                  <li
-                    key={item.type === 'book' ? item.id : item.slug}
-                    className="suggestion-item"
-                    onMouseDown={() => handleSuggestionClick(item)} 
-                  >
-                    <div className="suggestion-details">
-                      <span className="suggestion-title">{item.title || item.name}</span>
-                      {item.type === 'book' && <span className="suggestion-author">{item.authorName}</span>}
-                    </div>
-                  </li>
-                ))
-              ) : !isLoading && (
-                <li className="suggestion-not-found">
-                  შედეგი ვერ მოიძებნა
+              {suggestions.map(item => (
+                <li key={item.slug} onMouseDown={() => handleSuggestionClick(item)}>
+                  <span>{item.title || item.name}</span>
                 </li>
-              )}
+              ))}
             </ul>
           )}
         </div>
 
         <div className="auth-buttons">
-            {/* ვამოწმებთ, მომხმარებელი ავტორიზებულია თუ არა */}
-            {!loading && (
-              user ? (
-                <>
-                  <span className="welcome-message">გამარჯობა, {user.username}!</span>
-                  {/* ადმინის პანელის ღილაკი - მხოლოდ ადმინებისთვის */}
-                  {user.role === 'admin' && (
-                    <Link 
-                      to="/admin" 
-                      className="auth-btn admin-btn"
-                      style={{
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        color: 'white',
-                        textDecoration: 'none',
-                        marginRight: '10px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                        fontSize: '14px'
-                      }}
-                    >
-                      ⚙️ ადმინი
-                    </Link>
-                  )}
-                  <button onClick={logout} className="auth-btn logout-btn">გასვლა</button>
-                </>
-              ) : (
-                <>
-                  <button onClick={() => setModalType('login')} className="auth-btn login-btn">ავტორიზაცია</button>
-                  <button onClick={() => setModalType('register')} className="auth-btn register-btn">რეგისტრაცია</button>
-                </>
-              )
-            )}
+          {!loading && (
+            user ? (
+              <>
+                <span className="welcome-message">გამარჯობა, {user.username}!</span>
+                {user.role === 'admin' && (
+                  <Link to="/admin" className="auth-btn admin-btn">⚙️ ადმინი</Link>
+                )}
+                <button onClick={logout} className="auth-btn logout-btn">გასვლა</button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => setModalType('login')} className="auth-btn login-btn">ავტორიზაცია</button>
+                <button onClick={() => setModalType('register')} className="auth-btn register-btn">რეგისტრაცია</button>
+              </>
+            )
+          )}
         </div>
       </header>
 

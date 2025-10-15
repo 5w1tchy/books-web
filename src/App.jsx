@@ -1,42 +1,46 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
-import Books from './pages/Books';
-import About from './pages/about';
-import BookDetails from './pages/bookdetails';
-import ForYou from './pages/ForYou';
-import Intro from './components/Intro/Intro';
-import Banner from './components/Banner/banner';
-import AudioShorts from './components/AudioShorts/AudioShorts';
-import CircularLayout from './components/CircularLayout/CircularLayout';
-import Contact from './pages/Contact';
-import { AuthProvider } from './context/AuthContext';
-import Faq from './components/Faq/Faq';
+import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 
-// --- ადმინის კომპონენტების იმპორტი ---
-import Admin from './pages/Admin';
-import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './pages/AdminDashboard'; // ახალი დაშბორდი
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/Footer";
+import Books from "./pages/Books";
+import About from "./pages/about";
+import BookDetails from "./pages/bookdetails";
+import ForYou from "./pages/ForYou";
+import Intro from "./components/Intro/Intro";
+import Banner from "./components/Banner/banner";
+import AudioShorts from "./components/AudioShorts/AudioShorts";
+import CircularLayout from "./components/CircularLayout/CircularLayout";
+import Contact from "./pages/Contact";
+import Faq from "./components/Faq/Faq";
 
-import './App.css';
+import { AuthProvider } from "./context/AuthContext";
 
-// Layout კომპონენტი Header და Footer-ის კონტროლისთვის
+// --- ადმინის კომპონენტები ---
+import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+
+import "./App.css";
+
+// Layout კომპონენტი Header/Footer-ის კონტროლისთვის
 function Layout({ children, searchTerm, onSearch }) {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAdminRoute = location.pathname.startsWith("/admin");
 
   return (
     <div className="app-container">
-      {/* Header მხოლოდ არა-ადმინის გვერდებზე */}
       {!isAdminRoute && <Header onSearch={onSearch} />}
-
       <main className={isAdminRoute ? "admin-main-content" : "main-content"}>
         {children}
       </main>
-
-      {/* Footer მხოლოდ არა-ადმინის გვერდებზე */}
       {!isAdminRoute && <Footer />}
     </div>
   );
@@ -50,7 +54,7 @@ function App() {
       <Router>
         <Layout searchTerm={searchTerm} onSearch={setSearchTerm}>
           <Routes>
-            {/* --- მთავარი გვერდი --- */}
+            {/* მთავარი გვერდი */}
             <Route
               path="/"
               element={
@@ -66,17 +70,40 @@ function App() {
               }
             />
 
-            {/* --- ძირითადი გვერდები --- */}
+            {/* საჯარო გვერდები */}
             <Route path="/books" element={<Books searchTerm={searchTerm} />} />
             <Route path="/about" element={<About />} />
-            <Route path="/for-you" element={<ForYou />} />
-            <Route path="/books/:slug" element={<BookDetails />} />
             <Route path="/contact" element={<Contact />} />
-
-            {/* --- ადმინის როუტები --- */}
             <Route path="/admin/login" element={<AdminLogin />} />
-            
-            {/* ძველი Admin კომპონენტი - თუ არსებობს */}
+            <Route path="/login" element={<Navigate to="/admin/login" replace />} />
+
+            {/* დაცული გვერდები (User) */}
+            <Route
+              path="/for-you"
+              element={
+                <ProtectedRoute>
+                  <ForYou />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/books/:slug"
+              element={
+                <ProtectedRoute>
+                  <BookDetails />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* დაცული გვერდები (Admin) */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/admin/old"
               element={
@@ -85,23 +112,16 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
-            {/* ახალი AdminDashboard - მთავარი ადმინის პანელი */}
-            <Route
-              path="/admin"
-              element={<AdminDashboard />}
-            />
 
-            {/* --- 404 გვერდი (ოპციონალური) --- */}
-            <Route 
-              path="*" 
+            {/* 404 fallback */}
+            <Route
+              path="*"
               element={
-                <div style={{ textAlign: 'center', padding: '50px' }}>
-                  <h2>გვერდი ვერ მოიძებნა</h2>
-                  <p>404 - Page Not Found</p>
+                <div style={{ textAlign: "center", padding: "50px" }}>
+                  <h2>404 - გვერდი ვერ მოიძებნა</h2>
                   <a href="/">მთავარ გვერდზე დაბრუნება</a>
                 </div>
-              } 
+              }
             />
           </Routes>
         </Layout>

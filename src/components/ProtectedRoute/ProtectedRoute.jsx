@@ -1,25 +1,25 @@
+// src/components/ProtectedRoute/ProtectedRoute.jsx
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { useAuth } from '../../context/useAuth';
 
+/**
+ * ProtectedRoute აღარ გადამისამართებს ლოგინზე
+ * და არ REFRESH-ს.
+ * უბრალოდ აბრუნებს children ან adminOnly შემთხვევისთვის null.
+ */
 const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const token = localStorage.getItem('token');
-  const userData = localStorage.getItem('user');
+  const { user } = useAuth();
 
-  // თუ token არ არის, გადაამისამართე ლოგინზე
-  if (!token) {
-    return <Navigate to="/admin/login" replace />;
+  // თუ მომხმარებელი არ არის ავტორიზირებული
+  if (!user) {
+    // უბრალოდ აბრუნებს children, მაგალითად BookDetails გამოიტანს AuthModal
+    return children;
   }
 
-  // თუ adminOnly არის true, შეამოწმე admin როლი
-  if (adminOnly && userData) {
-    try {
-      const user = JSON.parse(userData);
-      if (user.role !== 'admin') {
-        return <Navigate to="/" replace />;
-      }
-    } catch (error) {
-      return <Navigate to="/admin/login" replace />;
-    }
+  // თუ adminOnly და user.role არ არის admin
+  if (adminOnly && user.role !== 'admin') {
+    // აქ შეიძლება null ან 404 fallback
+    return null;
   }
 
   return children;

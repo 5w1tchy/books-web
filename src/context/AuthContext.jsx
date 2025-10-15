@@ -13,36 +13,6 @@ export const AuthProvider = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refreshToken'));
   const [loading, setLoading] = useState(true);
 
-  // ფუნქცია, რომელიც ამოწმებს მიმდინარე მომხმარებელს ტოკენის მიხედვით
-  const fetchCurrentUser = useCallback(async (token) => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-      } else {
-        if (response.status === 401 && refreshToken) {
-          await refreshAccessToken();
-        } else {
-          logout();
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch user:', error);
-      logout();
-    } finally {
-      setLoading(false);
-    }
-  }, [/* refreshToken */]);
-
   // Access Token-ის განახლების ფუნქცია
   const refreshAccessToken = useCallback(async () => {
     const currentRefreshToken = localStorage.getItem('refreshToken');
@@ -71,7 +41,40 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // აპლიკაციის პირველად ჩატვირთვისას ვამოწმებთ მომხმარებლის სტატუსს
+  // მომხმარებლის მოპოვება ტოკენით
+  const fetchCurrentUser = useCallback(
+    async (token) => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          if (response.status === 401 && refreshToken) {
+            await refreshAccessToken();
+          } else {
+            logout();
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    },
+    [refreshToken, refreshAccessToken]
+  );
+
+  // აპის ჩატვირთვისას მომხმარებლის შემოწმება
   useEffect(() => {
     fetchCurrentUser(accessToken);
   }, [accessToken, fetchCurrentUser]);
@@ -84,17 +87,16 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error.message || 'Login failed');
-    }
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'Login failed');
 
-    const tokens = await response.json();
-    localStorage.setItem('accessToken', tokens.access_token);
-    localStorage.setItem('refreshToken', tokens.refresh_token);
-    setAccessToken(tokens.access_token);
-    setRefreshToken(tokens.refresh_token);
-  }, []);
+    localStorage.setItem('accessToken', data.access_token);
+    localStorage.setItem('refreshToken', data.refresh_token);
+    setAccessToken(data.access_token);
+    setRefreshToken(data.refresh_token);
+
+    await fetchCurrentUser(data.access_token);
+  }, [fetchCurrentUser]);
 
   // რეგისტრაციის ფუნქცია
   const register = useCallback(async (userData) => {
@@ -104,21 +106,17 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify(userData),
     });
 
-    const responseData = await response.json(); // პასუხს ვპარსავთ ნებისმიერ შემთხვევაში
+    const responseData = await response.json();
+    if (!response.ok) throw new Error(responseData.error?.message || 'Registration failed');
 
-    if (!response.ok) {
-      throw new Error(responseData.error.message || 'Registration failed');
-    }
-    
-    // ვინახავთ ტოკენებს და ვალოგინებთ მომხმარებელს
     localStorage.setItem('accessToken', responseData.access_token);
     localStorage.setItem('refreshToken', responseData.refresh_token);
     setAccessToken(responseData.access_token);
     setRefreshToken(responseData.refresh_token);
-    
-    // ვაბრუნებთ სრულ პასუხს, რომ მოდალმა გამოიყენოს password_warning
+
+    await fetchCurrentUser(responseData.access_token);
     return responseData;
-  }, []);
+  }, [fetchCurrentUser]);
 
   // ლოგაუთის ფუნქცია
   const logout = useCallback(async () => {
@@ -134,6 +132,7 @@ export const AuthProvider = ({ children }) => {
         console.error('Logout API call failed, clearing session locally.', error);
       }
     }
+
     setUser(null);
     setAccessToken(null);
     setRefreshToken(null);
@@ -141,7 +140,15 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('refreshToken');
   }, []);
 
-  const value = { user, login, register, logout, loading, accessToken };
+  // კონტექსტის მნიშვნელობები
+  const value = {
+    user,
+    login,
+    register,
+    logout,
+    loading,
+    accessToken,
+  };
 
   return (
     <AuthContext.Provider value={value}>
@@ -149,4 +156,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-

@@ -1,8 +1,10 @@
+// src/components/AuthModal/AuthModal.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
+import { useNavigate } from 'react-router-dom';
 import './AuthModal.css';
 
-const AuthModal = ({ type, onClose, onSwitch }) => {
+const AuthModal = ({ type, onClose, onSwitch, redirectTo, onSuccess }) => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -14,10 +16,10 @@ const AuthModal = ({ type, onClose, onSwitch }) => {
 
   const { login, register } = useAuth();
   const [currentType, setCurrentType] = useState(type);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setCurrentType(type);
-    // ვასუფთავებთ ველებს და შეცდომებს ტიპის შეცვლისას
     setEmail('');
     setUsername('');
     setPassword('');
@@ -77,13 +79,16 @@ const AuthModal = ({ type, onClose, onSwitch }) => {
     try {
       if (currentType === 'login') {
         await login(email, password);
+        if (onSuccess) onSuccess();
+        if (redirectTo) navigate(redirectTo, { replace: true });
         onClose();
       } else {
         const responseData = await register({ email, username, password });
-        
         if (responseData.password_warning) {
           setBackendWarning(responseData.password_warning);
         } else {
+          if (onSuccess) onSuccess();
+          if (redirectTo) navigate(redirectTo, { replace: true });
           onClose();
         }
       }
@@ -173,4 +178,3 @@ const AuthModal = ({ type, onClose, onSwitch }) => {
 };
 
 export default AuthModal;
-
