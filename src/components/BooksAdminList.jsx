@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../config/api";
 
 // ეს არის შენს API-ის ტოკენი (JWT)
