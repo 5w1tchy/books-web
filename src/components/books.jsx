@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
 import './Books.css';
 
 // 1. კომპონენტი იღებს searchTerm პროპს App.js-დან
@@ -22,8 +23,8 @@ function Books({ searchTerm }) {
         // 3. API-ს მისამართს ვაწყობთ დინამიურად
         // თუ searchTerm არსებობს, ვამატებთ ?q=... პარამეტრს
         const apiUrl = searchTerm
-          ? `https://books-api-7hu5.onrender.com/books?q=${searchTerm}`
-          : 'https://books-api-7hu5.onrender.com/books/';
+          ? `${API_BASE_URL}/books?q=${searchTerm}`
+          : `${API_BASE_URL}/books/`;
 
         console.log(`მოთხოვნის გაგზავნა მისამართზე: ${apiUrl}`); // დიაგნოსტიკისთვის
 
@@ -32,9 +33,9 @@ function Books({ searchTerm }) {
           throw new Error('ქსელთან დაკავშირებისას მოხდა შეცდომა');
         }
         const data = await response.json();
-        
+
         // API-დან დაბრუნებულ მონაცემებს ვინახავთ state-ში
-        setBooks(data.data || []); 
+        setBooks(data.data || []);
 
       } catch (err) {
         setError(err.message);

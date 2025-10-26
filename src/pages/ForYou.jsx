@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
 import './ForYou.css';
 
 // ეს კომპონენტი ხატავს წიგნების ბადეს
@@ -52,12 +53,12 @@ function ForYou() {
 
                     // ვაგზავნით მოთხოვნას მხოლოდ იმ შემთხვევაში, თუ slug არსებობს
                     if (lastViewedSlug) {
-                        const response = await fetch(`https://books-api-7hu5.onrender.com/books/${lastViewedSlug}/similar`);
-                        
+                        const response = await fetch(`${API_BASE_URL}/books/${lastViewedSlug}/similar`);
+
                         if (!response.ok) {
                             throw new Error(`API-სგან დაბრუნდა შეცდომა: ${response.status} ${response.statusText}`);
                         }
-                        
+
                         const data = await response.json();
                         setSimilarBooks(data.data || []);
                     }
@@ -78,9 +79,9 @@ function ForYou() {
     return (
         <div className="for-you-page">
             <h1>შენთვის</h1>
-            
+
             {error && <div className="status-message error">{error}</div>}
-            
+
             {recentlyViewed.length === 0 && similarBooks.length === 0 && !loading && !error && (
                 <div className="no-history">
                     <p>თქვენ ჯერ არცერთი წიგნი არ გინახავთ.</p>

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { API_BASE_URL } from '../../config/api';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -21,12 +22,12 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     setApiError(''); // ერორს წაშლა
-    
+
     try {
       const token = localStorage.getItem('token');
       console.log('🔑 Token exists:', !!token);
       console.log('🔑 Token preview:', token?.substring(0, 50) + '...');
-      
+
       const params = new URLSearchParams({
         page: currentPage.toString(),
         size: '20',
@@ -35,7 +36,7 @@ const UserManagement = () => {
         ...(filters.verified && { verified: filters.verified })
       });
 
-      const url = `https://books-api-7hu5.onrender.com/admin/users?${params}`;
+      const url = `${API_BASE_URL}/admin/users?${params}`;
       console.log('🌐 Requesting URL:', url);
 
       const response = await fetch(url, {
@@ -58,11 +59,11 @@ const UserManagement = () => {
           isArray: Array.isArray(data),
           keys: Object.keys(data)
         });
-        
+
         // ყველა შესაძლო ვარიანტის შემოწმება
         let usersList = [];
         let totalCount = 0;
-        
+
         if (data.items && Array.isArray(data.items)) {
           usersList = data.items;
           totalCount = data.total || data.items.length;
@@ -79,15 +80,15 @@ const UserManagement = () => {
           console.warn('⚠️ Unknown API response structure:', data);
           throw new Error('Unknown response structure');
         }
-        
+
         console.log('👥 Found users:', usersList.length);
         console.log('📊 Users sample:', usersList.slice(0, 2));
-        
+
         setUsers(usersList);
         setTotal(totalCount);
         setTotalPages(Math.ceil(totalCount / 20));
         setApiError(''); // Clear error on success
-        
+
       } else {
         const errorText = await response.text();
         console.error('❌ API Error:', {
@@ -95,7 +96,7 @@ const UserManagement = () => {
           statusText: response.statusText,
           body: errorText
         });
-        
+
         if (response.status === 401) {
           setApiError('ავტორიზაცია არასწორია - გთხოვთ ხელახლა შეხვიდეთ');
           // შესაძლოა სჭირდებოდეს logout logic
@@ -106,12 +107,12 @@ const UserManagement = () => {
         } else {
           setApiError(`API შეცდომა: ${response.status} - ${response.statusText}`);
         }
-        
+
         throw new Error(`API Error: ${response.status}`);
       }
     } catch (error) {
       console.error('💥 Fetch Error:', error);
-      
+
       if (!apiError) {
         if (error.name === 'TypeError' && error.message.includes('fetch')) {
           setApiError('ქსელის შეცდომა - სერვერთან კავშირი ვერ დამყარდა');
@@ -119,7 +120,7 @@ const UserManagement = () => {
           setApiError('არცნობილი შეცდომა მონაცემების ჩატვირთვისას');
         }
       }
-      
+
       // Demo data როგორც fallback
       console.log('🎭 Using demo data as fallback');
       const mockUsers = [
@@ -160,29 +161,29 @@ const UserManagement = () => {
           created_at: '2024-03-10T00:00:00Z'
         }
       ];
-      
+
       let filteredUsers = mockUsers;
-      
+
       // ფილტრების გამოყენება demo data-ზე
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
-        filteredUsers = filteredUsers.filter(user => 
+        filteredUsers = filteredUsers.filter(user =>
           user.email.toLowerCase().includes(searchLower) ||
           (user.username && user.username.toLowerCase().includes(searchLower))
         );
       }
-      
+
       if (filters.role) {
         filteredUsers = filteredUsers.filter(user => user.role === filters.role);
       }
-      
+
       if (filters.verified) {
         const isVerified = filters.verified === 'true';
-        filteredUsers = filteredUsers.filter(user => 
+        filteredUsers = filteredUsers.filter(user =>
           isVerified ? user.email_verified_at : !user.email_verified_at
         );
       }
-      
+
       setUsers(filteredUsers);
       setTotal(filteredUsers.length);
       setTotalPages(1);
@@ -194,13 +195,13 @@ const UserManagement = () => {
   // სხვა ფუნქციები უცვლელი...
   const handleBanUser = async (userId) => {
     if (!confirm('დარწმუნებული ხართ, რომ გსურთ ამ მომხმარებლის დაბანვა?')) return;
-    
+
     setActionLoading(prev => ({ ...prev, [userId]: true }));
     try {
       const token = localStorage.getItem('token');
       console.log('🚫 Banning user:', userId);
-      
-      const response = await fetch(`https://books-api-7hu5.onrender.com/admin/users/${userId}/ban`, {
+
+      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/ban`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -230,7 +231,7 @@ const UserManagement = () => {
     setActionLoading(prev => ({ ...prev, [userId]: true }));
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://books-api-7hu5.onrender.com/admin/users/${userId}/unban`, {
+      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/unban`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -254,11 +255,11 @@ const UserManagement = () => {
 
   const handleRoleChange = async (userId, newRole) => {
     if (!confirm(`დარწმუნებული ხართ, რომ გსურთ როლის შეცვლა ${newRole}-ზე?`)) return;
-    
+
     setActionLoading(prev => ({ ...prev, [userId]: true }));
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://books-api-7hu5.onrender.com/admin/users/${userId}/role`, {
+      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/role`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -285,7 +286,7 @@ const UserManagement = () => {
     setActionLoading(prev => ({ ...prev, [userId + '_verify']: true }));
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://books-api-7hu5.onrender.com/admin/users/${userId}/resend-verification`, {
+      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/resend-verification`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -348,7 +349,7 @@ const UserManagement = () => {
           </div>
         </div>
       )}
-      
+
       {/* Debug Info - მხოლოდ development-ში */}
       {process.env.NODE_ENV === 'development' && (
         <div style={{
@@ -360,18 +361,18 @@ const UserManagement = () => {
           marginBottom: '20px',
           fontSize: '13px'
         }}>
-          <strong>🔧 Debug Info:</strong><br/>
-          Token: {localStorage.getItem('token') ? '✓ არსებობს' : '❌ არ არსებობს'}<br/>
-          Users Count: {users.length}<br/>
-          Current Page: {currentPage}<br/>
+          <strong>🔧 Debug Info:</strong><br />
+          Token: {localStorage.getItem('token') ? '✓ არსებობს' : '❌ არ არსებობს'}<br />
+          Users Count: {users.length}<br />
+          Current Page: {currentPage}<br />
           Search: "{searchTerm}" | Role: "{filters.role}" | Verified: "{filters.verified}"
         </div>
       )}
-      
+
       {/* Filters */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '15px', 
+      <div style={{
+        display: 'flex',
+        gap: '15px',
         marginBottom: '20px',
         flexWrap: 'wrap',
         alignItems: 'center'
@@ -392,7 +393,7 @@ const UserManagement = () => {
             fontSize: '16px'
           }}
         />
-        
+
         <select
           value={filters.role}
           onChange={(e) => setFilters(prev => ({ ...prev, role: e.target.value }))}
@@ -407,7 +408,7 @@ const UserManagement = () => {
           <option value="user">მომხმარებელი</option>
           <option value="admin">ადმინი</option>
         </select>
-        
+
         <select
           value={filters.verified}
           onChange={(e) => setFilters(prev => ({ ...prev, verified: e.target.value }))}
@@ -422,7 +423,7 @@ const UserManagement = () => {
           <option value="true">ვერიფიცირებული</option>
           <option value="false">ვერ ვერიფიცირებული</option>
         </select>
-        
+
         <button
           onClick={fetchUsers}
           style={{
@@ -440,11 +441,11 @@ const UserManagement = () => {
       </div>
 
       {/* რჩება უცვლელი - ტაბლი და pagination */}
-      <div style={{ 
-        background: 'white', 
-        borderRadius: '8px', 
-        overflow: 'hidden', 
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)' 
+      <div style={{
+        background: 'white',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
@@ -486,9 +487,9 @@ const UserManagement = () => {
                   </select>
                 </td>
                 <td style={{ padding: '12px' }}>
-                  <span style={{ 
-                    padding: '4px 8px', 
-                    borderRadius: '4px', 
+                  <span style={{
+                    padding: '4px 8px',
+                    borderRadius: '4px',
                     background: user.status === 'active' ? '#28a745' : '#dc3545',
                     color: 'white',
                     fontSize: '12px',
@@ -499,7 +500,7 @@ const UserManagement = () => {
                 </td>
                 <td style={{ padding: '12px', textAlign: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ 
+                    <span style={{
                       fontSize: '18px',
                       color: user.email_verified_at ? '#28a745' : '#dc3545'
                     }}>
@@ -586,14 +587,14 @@ const UserManagement = () => {
       )}
 
       {totalPages > 1 && (
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          gap: '15px', 
-          marginTop: '20px' 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '15px',
+          marginTop: '20px'
         }}>
-          <button 
+          <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
             style={{
@@ -606,12 +607,12 @@ const UserManagement = () => {
           >
             წინა
           </button>
-          
+
           <span style={{ color: '#666' }}>
             გვერდი {currentPage} / {totalPages}
           </span>
-          
-          <button 
+
+          <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
             style={{

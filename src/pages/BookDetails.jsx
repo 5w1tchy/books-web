@@ -1,9 +1,10 @@
 // src/pages/BookDetails.jsx
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import AuthModal from "../components/AuthModal/AuthModal";
+import { API_BASE_URL } from "../config/api";
 import "./BookDetails.css";
 import Coda from "./Coda";
-import AuthModal from "../components/AuthModal/AuthModal";
 
 function BookDetail() {
   const { slug } = useParams();
@@ -15,6 +16,8 @@ function BookDetail() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [needsAuth, setNeedsAuth] = useState(false);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [audioLoading, setAudioLoading] = useState(false);
 
   const getToken = () =>
     localStorage.getItem("accessToken") ||
@@ -35,11 +38,15 @@ function BookDetail() {
 
     try {
       const res = await fetch(
-        `https://books-api-7hu5.onrender.com/books/${slug}`,
+        `${API_BASE_URL}/books/${slug}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      console.log("📖 Book fetch status:", res.status);
+
       if (res.status === 401 || res.status === 403) {
+        const errorText = await res.text();
+        console.error("🚫 Auth error:", errorText);
         localStorage.clear();
         setNeedsAuth(true);
         setError("სესია დასრულებულია, გთხოვთ ავტორიზაცია გაიაროთ.");
@@ -52,19 +59,35 @@ function BookDetail() {
       const data = await res.json();
       const bookData = data.data || data;
 
+      console.log("📚 Book data received:", bookData);
+      console.log("🖼️ Cover URL from DB:", bookData.cover_url);
+
+      // Get cover URL by constructing the endpoint - browser will handle redirect
+      let coverImageUrl = "https://placehold.co/300x450/eee/ccc?text=No%20Image";
+      if (bookData.cover_url) {
+        // Just use the redirect URL directly - no fetch needed
+        coverImageUrl = `${API_BASE_URL}/books/${slug}/cover`;
+        console.log("🖼️ Using cover URL:", coverImageUrl);
+      } else {
+        console.log("⚠️ No cover_url in book data");
+      }
+
       setBook({
         title: bookData.title || "უცნობი სათაური",
-        author: Array.isArray(bookData.authors)
-          ? bookData.authors.join(", ")
-          : bookData.author || "უცნობი ავტორი",
-        categories: bookData.categories || [],
+        author: Array.isArray(bookData.author)
+          ? bookData.author.join(", ")
+          : Array.isArray(bookData.authors)
+            ? bookData.authors.join(", ")
+            : bookData.author || bookData.authors || "უცნობი ავტორი",
+        categories: bookData.category_slugs || bookData.categories || [],
         short: bookData.short || bookData.description || "",
         summary: bookData.summary || bookData.full_description || "",
         coda: bookData.coda || bookData.best_quote || bookData.excerpt || "",
-        imageUrl:
-          bookData.imageUrl ||
-          "https://placehold.co/300x450/eee/ccc?text=No%20Image",
+        imageUrl: coverImageUrl,
+        hasAudio: !!bookData.audio_key,
       });
+
+      console.log("🎵 Has audio?", !!bookData.audio_key, "Audio key:", bookData.audio_key);
     } catch (err) {
       setError(err.message || "დაფიქსირდა შეცდომა მონაცემების მიღებისას.");
     } finally {
@@ -75,6 +98,38 @@ function BookDetail() {
   useEffect(() => {
     fetchBook();
   }, [slug]);
+
+  const fetchAudioUrl = async () => {
+    if (!book?.hasAudio) return;
+
+    setAudioLoading(true);
+    try {
+      const token = getToken();
+      const res = await fetch(`${API_BASE_URL}/books/${slug}/audio`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setAudioUrl(data.audio_url);
+      }
+    } catch (err) {
+      console.error("Failed to fetch audio URL:", err);
+    } finally {
+      setAudioLoading(false);
+    }
+  };
+
+  const handlePlayAudio = () => {
+    if (audioUrl) {
+      // If we already have the URL, just play
+      const audio = document.getElementById('book-audio');
+      if (audio) audio.play();
+    } else {
+      // Fetch the URL first
+      fetchAudioUrl();
+    }
+  };
 
   const handleModalClose = () => setModalType(null);
 
@@ -142,11 +197,48 @@ function BookDetail() {
   return (
     <div className="book-detail-page">
       <div className="book-detail-container">
-        <img
-          src={book.imageUrl}
-          alt={book.title}
-          className="book-detail-cover"
-        />
+        <div>
+          <img
+            src={book.imageUrl}
+            alt={book.title}
+            className="book-detail-cover"
+          />
+
+          {/* Audio player right below the cover */}
+          {book.hasAudio && (
+            <div className="audio-player-section" style={{ marginTop: '15px' }}>
+              {audioUrl ? (
+                <audio id="book-audio" controls style={{ width: '100%' }}>
+                  <source src={audioUrl} type="audio/mpeg" />
+                  თქვენი ბრაუზერი არ უჭერს მხარს აუდიო ელემენტს.
+                </audio>
+              ) : (
+                <button
+                  className="play-audio-btn"
+                  onClick={handlePlayAudio}
+                  disabled={audioLoading}
+                  style={{
+                    padding: '12px 24px',
+                    fontSize: '16px',
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: audioLoading ? 'wait' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    width: '100%',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {audioLoading ? '⏳ იტვირთება...' : '▶️ მოუსმინე წიგნს'}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
         <div className="book-detail-info">
           <h1>{book.title}</h1>
           <h2>{book.author}</h2>

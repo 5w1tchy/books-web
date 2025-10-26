@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
 
 const AdminLogin = () => {
   const [credentials, setCredentials] = useState({
@@ -14,7 +15,7 @@ const AdminLogin = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    
+
     if (token && userData) {
       try {
         const user = JSON.parse(userData);
@@ -35,7 +36,7 @@ const AdminLogin = () => {
 
     try {
       // პირველ რიგში ვცდილობთ მთავარ endpoint-ს
-      const response = await fetch('https://books-api-7hu5.onrender.com/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -46,7 +47,7 @@ const AdminLogin = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Login success:', data);
-        
+
         // თუ მივიღეთ tokens, შევინახოთ და შევქმნათ admin user object
         if (data.access_token) {
           const adminUser = {
@@ -55,16 +56,16 @@ const AdminLogin = () => {
             username: 'admin',
             role: 'admin'
           };
-          
+
           localStorage.setItem('token', data.access_token);
           localStorage.setItem('user', JSON.stringify(adminUser));
-          
+
           // გადასვლა admin panel-ში
           window.location.href = '/admin';
           return;
         }
       }
-      
+
       // თუ API არ იმუშავა ან არ არის admin - demo mode
       if (credentials.email.toLowerCase().includes('admin') && credentials.password.length > 3) {
         const adminUser = {
@@ -73,19 +74,19 @@ const AdminLogin = () => {
           username: 'admin',
           role: 'admin'
         };
-        
+
         localStorage.setItem('token', 'demo-admin-token-123');
         localStorage.setItem('user', JSON.stringify(adminUser));
-        
+
         window.location.href = '/admin';
         return;
       }
-      
+
       setError('არასწორი ემეილი ან პაროლი. ადმინისთვის გამოიყენეთ ემეილი რომელიც შეიცავს "admin"-ს');
 
     } catch (err) {
       console.error('Login error:', err);
-      
+
       // Fallback - demo mode
       if (credentials.email.toLowerCase().includes('admin') && credentials.password.length > 3) {
         const adminUser = {
@@ -94,14 +95,14 @@ const AdminLogin = () => {
           username: 'admin',
           role: 'admin'
         };
-        
+
         localStorage.setItem('token', 'demo-admin-token-123');
         localStorage.setItem('user', JSON.stringify(adminUser));
-        
+
         window.location.href = '/admin';
         return;
       }
-      
+
       setError('შეცდომა სერვერთან კავშირში. გამოიყენეთ demo: admin@example.com');
     } finally {
       setLoading(false);
@@ -109,10 +110,10 @@ const AdminLogin = () => {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
       justifyContent: 'center',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     }}>
@@ -127,17 +128,17 @@ const AdminLogin = () => {
         <p style={{ textAlign: 'center', color: '#666', marginBottom: '20px' }}>
           შედით თქვენი ადმინის ანგარიშით
         </p>
-        
-        <div style={{ 
-          background: '#e7f3ff', 
-          padding: '15px', 
-          borderRadius: '8px', 
+
+        <div style={{
+          background: '#e7f3ff',
+          padding: '15px',
+          borderRadius: '8px',
           marginBottom: '20px',
           fontSize: '14px',
           color: '#0066cc'
         }}>
-          <strong>💡 დმო რეჟიმი:</strong><br/>
-          • რეალური API: ნებისმიერი email/password<br/>
+          <strong>💡 დმო რეჟიმი:</strong><br />
+          • რეალური API: ნებისმიერი email/password<br />
           • Demo: email-ში უნდა იყოს "admin"
         </div>
 
@@ -154,7 +155,7 @@ const AdminLogin = () => {
             {error}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#333' }}>
@@ -163,7 +164,7 @@ const AdminLogin = () => {
             <input
               type="email"
               value={credentials.email}
-              onChange={(e) => setCredentials({...credentials, email: e.target.value})}
+              onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
               placeholder="admin@example.com"
               style={{
                 width: '100%',
@@ -179,7 +180,7 @@ const AdminLogin = () => {
               required
             />
           </div>
-          
+
           <div style={{ marginBottom: '30px' }}>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#333' }}>
               პაროლი:
@@ -187,7 +188,7 @@ const AdminLogin = () => {
             <input
               type="password"
               value={credentials.password}
-              onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
               placeholder="••••••••"
               style={{
                 width: '100%',
@@ -203,7 +204,7 @@ const AdminLogin = () => {
               required
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={loading}
@@ -223,18 +224,18 @@ const AdminLogin = () => {
             {loading ? 'შესვლა...' : '🔐 შესვლა'}
           </button>
         </form>
-        
-        <div style={{ 
-          textAlign: 'center', 
-          marginTop: '25px', 
-          paddingTop: '20px', 
-          borderTop: '1px solid #eee' 
+
+        <div style={{
+          textAlign: 'center',
+          marginTop: '25px',
+          paddingTop: '20px',
+          borderTop: '1px solid #eee'
         }}>
-          <a 
-            href="/" 
-            style={{ 
-              color: '#667eea', 
-              textDecoration: 'none', 
+          <a
+            href="/"
+            style={{
+              color: '#667eea',
+              textDecoration: 'none',
               fontWeight: '500',
               fontSize: '14px'
             }}

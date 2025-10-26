@@ -1,7 +1,5 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
-
-// API-ს საბაზისო მისამართი
-const API_BASE_URL = 'https://books-api-7hu5.onrender.com';
+import { createContext, useCallback, useEffect, useState } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 // კონტექსტის შექმნა
 export const AuthContext = createContext(null);

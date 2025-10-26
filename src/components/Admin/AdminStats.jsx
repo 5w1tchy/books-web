@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { API_BASE_URL } from '../../config/api';
 
 const AdminStats = () => {
   const [stats, setStats] = useState({
@@ -17,7 +18,7 @@ const AdminStats = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://books-api-7hu5.onrender.com/admin/stats', {
+      const response = await fetch(`${API_BASE_URL}/admin/stats`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -35,7 +36,7 @@ const AdminStats = () => {
     } catch (error) {
       console.error('Error fetching stats:', error);
       setError('სტატისტიკის ჩატვირთვა ვერ მოხერხდა');
-      
+
       // Demo data as fallback
       setStats({
         users_total: 1247,
@@ -176,7 +177,7 @@ const AdminStats = () => {
               borderRadius: '6px',
               color: '#2e7d32'
             }}>
-              {stats.users_total > 0 
+              {stats.users_total > 0
                 ? `${((stats.users_verified / stats.users_total) * 100).toFixed(1)}%`
                 : '0%'
               }

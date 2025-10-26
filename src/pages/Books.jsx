@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
 import './Books.css';
 
 // თუ ძებნის ფუნქციონალიც გაქვს, searchTerm დააბრუნე props-ში: function Books({ searchTerm })
@@ -18,12 +19,12 @@ function Books() {
       setError(null);
       try {
         // 3. API მისამართს ვაწყობთ დინამიურად sortBy პარამეტრის გამოყენებით
-        const apiUrl = `https://books-api-7hu5.onrender.com/books?sort=${sortBy}`;
-        
+        const apiUrl = `${API_BASE_URL}/books?sort=${sortBy}`;
+
         // თუ ძებნაც გჭირდება, ლოგიკა ასეთი იქნება:
         // const searchParam = searchTerm ? `&q=${searchTerm}` : '';
-        // const apiUrl = `https://books-api-7hu5.onrender.com/books?sort=${sortBy}${searchParam}`;
-        
+        // const apiUrl = `${API_BASE_URL}/books?sort=${sortBy}${searchParam}`;
+
         console.log("API მოთხოვნა მისამართზე:", apiUrl); // დიაგნოსტიკისთვის
 
         const response = await fetch(apiUrl);
@@ -53,7 +54,7 @@ function Books() {
     <div className="books-page">
       <div className="page-header">
         <h1>წიგნების კატალოგი</h1>
-        
+
         {/* --- ⭐ 6. ვამატებთ ფილტრის UI ელემენტს --- */}
         <div className="filters-container">
           <label htmlFor="sort-by">სორტირება:</label>
@@ -65,29 +66,35 @@ function Books() {
           </select>
         </div>
       </div>
-      
+
       {/* --- ⭐ 7. ვამატებთ loading მდგომარეობას აქაც --- */}
       {loading ? (
         <div className="status-message">იტვირთება წიგნები...</div>
       ) : (
         <div className="books-grid">
           {books.length > 0 ? (
-            books.map((book) => (
-              <Link to={`/books/${book.slug || book.id}`} key={book.id} className="book-card-link">
-                <div className="book-card">
-                  <img src={book.imageUrl || 'https://placehold.co/300x450/eee/ccc?text=No%20Image'} alt={book.title} />
-                  <div className="book-info">
-                    <h3>{book.title}</h3>
-                    <p>{book.author}</p>
-                    {book.summary && (
-                      <p className="book-card-summary">
-                        {book.summary.substring(0, 100)}...
-                      </p>
-                    )}
+            books.map((book) => {
+              const coverUrl = book.imageUrl
+                ? `${API_BASE_URL}${book.imageUrl}`
+                : 'https://placehold.co/300x450/eee/ccc?text=No%20Image';
+
+              return (
+                <Link to={`/books/${book.slug || book.id}`} key={book.id} className="book-card-link">
+                  <div className="book-card">
+                    <img src={coverUrl} alt={book.title} />
+                    <div className="book-info">
+                      <h3>{book.title}</h3>
+                      <p>{book.author}</p>
+                      {book.summary && (
+                        <p className="book-card-summary">
+                          {book.summary.substring(0, 100)}...
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))
+                </Link>
+              );
+            })
           ) : (
             <p className="status-message">წიგნები ვერ მოიძებნა.</p>
           )}

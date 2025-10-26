@@ -1,9 +1,10 @@
 // src/components/Header/Header.jsx
-import React, { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './Header.css';
-import AuthModal from '../AuthModal/AuthModal';
+import { API_BASE_URL } from '../../config/api';
 import { useAuth } from '../../context/useAuth';
+import AuthModal from '../AuthModal/AuthModal';
+import './Header.css';
 
 const Header = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,7 +27,7 @@ const Header = ({ onSearch }) => {
     const timer = setTimeout(async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`https://books-api-7hu5.onrender.com/search/suggest?q=${searchTerm}&limit=10`);
+        const res = await fetch(`${API_BASE_URL}/search/suggest?q=${searchTerm}&limit=10`);
         const data = await res.json();
         setSuggestions(data?.data || []);
       } catch (err) {
