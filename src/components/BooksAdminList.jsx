@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "../config/api";
 
 // ეს არის შენს API-ის ტოკენი (JWT)
 const API_TOKEN = "შენი_ბიერერ_ტოკენი";
@@ -19,7 +20,7 @@ const BooksAdminList = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:3000/admin/books?page=${page}&size=${size}`,
+          `${API_BASE_URL}/admin/books?page=${page}&size=${size}`,
           {
             headers: {
               Authorization: `Bearer ${API_TOKEN}`,

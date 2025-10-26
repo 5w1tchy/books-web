@@ -1,7 +1,6 @@
 // 1. ძირითადი API მისამართი
-const API_BASE_URL = '/api';
-// ეს არის თქვენი backend-ის ძირითადი URL. 
-// '/api' ნიშნავს რომ backend localhost:3000/api-ზე მუშაობს
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// ეს არის თქვენი backend-ის ძირითადი URL, რომელიც მოდის .env.local ფაილიდან
 
 // 2. Token-ის მიღების ფუნქცია
 const getToken = () => localStorage.getItem('token');
