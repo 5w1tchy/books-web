@@ -13,6 +13,7 @@ import Books from "./pages/Books";
 import About from "./pages/about";
 import BookDetails from "./pages/bookdetails";
 import ForYou from "./pages/ForYou";
+import Profile from "./pages/Profile";
 import Intro from "./components/Intro/Intro";
 import Banner from "./components/Banner/banner";
 import AudioShorts from "./components/AudioShorts/AudioShorts";
@@ -78,6 +79,14 @@ function App() {
             <Route path="/login" element={<Navigate to="/admin/login" replace />} />
 
             {/* დაცული გვერდები (User) */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/for-you"
               element={

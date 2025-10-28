@@ -118,11 +118,16 @@ const Header = ({ onSearch }) => {
           {!loading && (
             user ? (
               <>
-                <span className="welcome-message">გამარჯობა, {user.username}!</span>
-                {user.role === 'admin' && (
-                  <Link to="/admin" className="auth-btn admin-btn">⚙️ ადმინი</Link>
-                )}
-                <button onClick={logout} className="auth-btn logout-btn">გასვლა</button>
+                <div className="user-menu-container">
+                  <span className="welcome-message">გამარჯობა, {user.username}!</span>
+                  <div className="user-dropdown">
+                    <Link to="/profile" className="dropdown-item">📝 პროფილი</Link>
+                    {user.role === 'admin' && (
+                      <Link to="/admin" className="dropdown-item">⚙️ ადმინი</Link>
+                    )}
+                    <button onClick={logout} className="dropdown-item logout-item">🚪 გასვლა</button>
+                  </div>
+                </div>
               </>
             ) : (
               <>

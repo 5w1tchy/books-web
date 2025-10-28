@@ -138,12 +138,48 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('refreshToken');
   }, []);
 
+  // პაროლის შეცვლის ფუნქცია
+  const changePassword = useCallback(async (oldPassword, newPassword) => {
+    if (!accessToken) {
+      throw new Error('Not authenticated');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        old_password: oldPassword,
+        new_password: newPassword,
+      }),
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error?.message || 'Password change failed');
+    }
+
+    // Update tokens after password change (backend bumps token version)
+    if (data.access_token && data.refresh_token) {
+      localStorage.setItem('accessToken', data.access_token);
+      localStorage.setItem('refreshToken', data.refresh_token);
+      setAccessToken(data.access_token);
+      setRefreshToken(data.refresh_token);
+    }
+
+    return data; // Return full response including password_score and warnings
+  }, [accessToken]);
+
   // კონტექსტის მნიშვნელობები
   const value = {
     user,
     login,
     register,
     logout,
+    changePassword,
     loading,
     accessToken,
   };
