@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
 import { API_BASE_URL } from '../config/api';
+import { rateLimitAwareFetch } from '../utils/retryUtils';
 
 // კონტექსტის შექმნა
 export const AuthContext = createContext(null);
@@ -79,14 +80,21 @@ export const AuthProvider = ({ children }) => {
 
   // ლოგინის ფუნქცია
   const login = useCallback(async (email, password) => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await rateLimitAwareFetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error?.message || 'Login failed');
+    const requestId = response.headers.get('X-Request-ID');
+
+    if (!response.ok) {
+      const error = new Error(data.error?.message || 'Login failed');
+      error.requestId = requestId;
+      error.status = response.status;
+      throw error;
+    }
 
     localStorage.setItem('accessToken', data.access_token);
     localStorage.setItem('refreshToken', data.refresh_token);
@@ -98,14 +106,21 @@ export const AuthProvider = ({ children }) => {
 
   // რეგისტრაციის ფუნქცია
   const register = useCallback(async (userData) => {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await rateLimitAwareFetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
     });
 
     const responseData = await response.json();
-    if (!response.ok) throw new Error(responseData.error?.message || 'Registration failed');
+    const requestId = response.headers.get('X-Request-ID');
+
+    if (!response.ok) {
+      const error = new Error(responseData.error?.message || 'Registration failed');
+      error.requestId = requestId;
+      error.status = response.status;
+      throw error;
+    }
 
     localStorage.setItem('accessToken', responseData.access_token);
     localStorage.setItem('refreshToken', responseData.refresh_token);

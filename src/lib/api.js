@@ -1,6 +1,16 @@
 import { API_BASE_URL, getToken } from '../config/api';
 
-// API Request wrapper
+// Custom API Error class with request ID support
+class APIError extends Error {
+  constructor(message, status, requestId) {
+    super(message);
+    this.name = 'APIError';
+    this.status = status;
+    this.requestId = requestId;
+  }
+}
+
+// API Request wrapper with enhanced error handling
 const apiRequest = async (url, options = {}) => {
   const token = getToken();
 
@@ -15,15 +25,51 @@ const apiRequest = async (url, options = {}) => {
 
   try {
     const response = await fetch(`${API_BASE_URL}${url}`, config);
+    const requestId = response.headers.get('X-Request-ID');
+
+    // Handle rate limiting
+    if (response.status === 429) {
+      const retryAfter = response.headers.get('Retry-After');
+      throw new APIError(
+        `Too many requests. Please try again ${retryAfter ? `after ${retryAfter} seconds` : 'later'}.`,
+        429,
+        requestId
+      );
+    }
+
+    // Handle body size errors
+    if (response.status === 413) {
+      throw new APIError(
+        'Request payload too large. Maximum size is 10MB.',
+        413,
+        requestId
+      );
+    }
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new APIError(
+        errorData.error || errorData.message || `HTTP error! status: ${response.status}`,
+        response.status,
+        requestId
+      );
     }
 
     return await response.json();
   } catch (error) {
+    // If it's already an APIError, rethrow it
+    if (error instanceof APIError) {
+      console.error(`API Request failed [${error.requestId}]:`, error.message);
+      throw error;
+    }
+
+    // Handle network errors
     console.error('API Request failed:', error);
-    throw error;
+    throw new APIError(
+      'Network error. Please check your connection.',
+      0,
+      null
+    );
   }
 };
 

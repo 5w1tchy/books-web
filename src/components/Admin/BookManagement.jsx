@@ -1,6 +1,7 @@
 // src/pages/BookManagement.jsx
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../config/api";
+import { formatFileSize, validateFileSize } from "../../utils/fileValidation";
 import "./BookManagement.css"; // ახ. სტილებისთვის
 
 // Configurable limits (env or defaults)
@@ -125,11 +126,16 @@ const BookManagement = () => {
     if (!allowedTypes.includes(file.type)) {
       return { ok: false, msg: `${label}: დაუშვებელი ტიპი (${file.type})` };
     }
-    const sizeMB = file.size / (1024 * 1024);
-    if (sizeMB > maxMB) {
-      return { ok: false, msg: `${label}: ზომა ${sizeMB.toFixed(1)}MB > ${maxMB}MB` };
+
+    try {
+      validateFileSize(file, maxMB * 1024 * 1024);
+      return { ok: true };
+    } catch (error) {
+      return {
+        ok: false,
+        msg: `${label}: ${error.message} (მაქსიმალური: ${formatFileSize(maxMB * 1024 * 1024)})`
+      };
     }
-    return { ok: true };
   };
 
   // Cover image choose/preview (stores File separately)
@@ -188,17 +194,25 @@ const BookManagement = () => {
     if (!file) return;
     const v = validateFile(file, AUDIO_TYPES, AUDIO_MAX_MB, "აუდიო");
     if (!v.ok) throw new Error(v.msg);
+    
+    console.log("🎵 Starting audio upload for book:", bookId);
+    
+    // Direct upload through backend (CORS workaround)
     const fd = new FormData();
     fd.append("audio", file);
-    const res = await fetch(`${API_BASE_URL}/admin/books/${bookId}/audio`, {
-      method: "POST",
+    
+    const res = await fetch(`${API_BASE_URL}/admin/books/${bookId}/audio/upload`, {
+      method: "PUT",
       headers: { Authorization: `Bearer ${token}` },
       body: fd,
     });
+    
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      throw new Error(data.error || data.message || `Audio HTTP ${res.status}`);
+      throw new Error(data.error || data.message || `Audio upload failed: ${res.status}`);
     }
+    
+    console.log("✅ Audio uploaded successfully");
   };
 
   // Save (Create uses multipart with cover+audio; Edit keeps JSON + optional media uploads)
