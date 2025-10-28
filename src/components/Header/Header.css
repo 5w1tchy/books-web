@@ -26,7 +26,8 @@
 }
 
 .main-nav {
-  margin-left: 30px; /* დაშორება ლოგოსგან */
+  margin-left: 30px;
+  /* დაშორება ლოგოსგან */
 }
 
 .main-nav ul {
@@ -292,6 +293,7 @@
   0% {
     transform: translateY(-50%) rotate(0deg);
   }
+
   100% {
     transform: translateY(-50%) rotate(360deg);
   }

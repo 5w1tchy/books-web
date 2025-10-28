@@ -1,33 +1,33 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
+  Navigate,
+  Route,
   BrowserRouter as Router,
   Routes,
-  Route,
   useLocation,
-  Navigate,
 } from "react-router-dom";
 
-import Header from "./components/Header/Header";
+import AudioShorts from "./components/AudioShorts/AudioShorts";
+import Banner from "./components/Banner/banner";
+import CircularLayout from "./components/CircularLayout/CircularLayout";
+import Faq from "./components/Faq/Faq";
 import Footer from "./components/Footer/Footer";
-import Books from "./pages/Books";
+import Header from "./components/Header/Header";
+import Intro from "./components/Intro/Intro";
 import About from "./pages/about";
 import BookDetails from "./pages/bookdetails";
+import Books from "./pages/Books";
+import Contact from "./pages/Contact";
 import ForYou from "./pages/ForYou";
 import Profile from "./pages/Profile";
-import Intro from "./components/Intro/Intro";
-import Banner from "./components/Banner/banner";
-import AudioShorts from "./components/AudioShorts/AudioShorts";
-import CircularLayout from "./components/CircularLayout/CircularLayout";
-import Contact from "./pages/Contact";
-import Faq from "./components/Faq/Faq";
 
 import { AuthProvider } from "./context/AuthContext";
 
 // --- ადმინის კომპონენტები ---
-import Admin from "./pages/Admin";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import Admin from "./pages/Admin";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminLogin from "./pages/AdminLogin";
 
 import "./App.css";
 
