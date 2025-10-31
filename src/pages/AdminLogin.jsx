@@ -57,7 +57,9 @@ const AdminLogin = () => {
             role: 'admin'
           };
 
-          localStorage.setItem('token', data.access_token);
+          // Store with the same keys that AuthContext expects
+          localStorage.setItem('accessToken', data.access_token);
+          localStorage.setItem('token', data.access_token); // Keep for compatibility
           localStorage.setItem('user', JSON.stringify(adminUser));
 
           // გადასვლა admin panel-ში
@@ -75,6 +77,7 @@ const AdminLogin = () => {
           role: 'admin'
         };
 
+        localStorage.setItem('accessToken', 'demo-admin-token-123');
         localStorage.setItem('token', 'demo-admin-token-123');
         localStorage.setItem('user', JSON.stringify(adminUser));
 
@@ -96,6 +99,7 @@ const AdminLogin = () => {
           role: 'admin'
         };
 
+        localStorage.setItem('accessToken', 'demo-admin-token-123');
         localStorage.setItem('token', 'demo-admin-token-123');
         localStorage.setItem('user', JSON.stringify(adminUser));
 

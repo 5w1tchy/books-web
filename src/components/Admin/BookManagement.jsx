@@ -29,6 +29,10 @@ const BookManagement = () => {
     imageUrl: "",
   });
 
+  // Temporary input strings for comma-separated fields
+  const [authorsInput, setAuthorsInput] = useState("");
+  const [categoriesInput, setCategoriesInput] = useState("");
+
   // Local file state (NOT part of JSON)
   const [imagePreview, setImagePreview] = useState("");
   const [coverFile, setCoverFile] = useState(null);
@@ -114,6 +118,8 @@ const BookManagement = () => {
       coda: book.coda,
       imageUrl: book.imageUrl,
     });
+    setAuthorsInput((book.authors || []).join(", "));
+    setCategoriesInput((book.categories || []).join(", "));
     setImagePreview(book.imageUrl || "");
     setCoverFile(null);
     setAudioFile(null);
@@ -194,24 +200,24 @@ const BookManagement = () => {
     if (!file) return;
     const v = validateFile(file, AUDIO_TYPES, AUDIO_MAX_MB, "აუდიო");
     if (!v.ok) throw new Error(v.msg);
-    
+
     console.log("🎵 Starting audio upload for book:", bookId);
-    
+
     // Direct upload through backend (CORS workaround)
     const fd = new FormData();
     fd.append("audio", file);
-    
+
     const res = await fetch(`${API_BASE_URL}/admin/books/${bookId}/audio/upload`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}` },
       body: fd,
     });
-    
+
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       throw new Error(data.error || data.message || `Audio upload failed: ${res.status}`);
     }
-    
+
     console.log("✅ Audio uploaded successfully");
   };
 
@@ -229,13 +235,17 @@ const BookManagement = () => {
         const vAud = validateFile(audioFile, AUDIO_TYPES, AUDIO_MAX_MB, "აუდიო");
         if (!vAud.ok) throw new Error(vAud.msg);
 
+        // Convert input strings to arrays
+        const authorsArray = authorsInput.split(",").map((a) => a.trim()).filter(Boolean);
+        const categoriesArray = categoriesInput.split(",").map((c) => c.trim()).filter(Boolean);
+
         const fd = new FormData();
         fd.append("title", newBook.title);
         fd.append("short", newBook.short || "");
         fd.append("summary", newBook.summary || "");
         fd.append("coda", newBook.coda || "");
-        (newBook.authors || []).forEach((a) => a && fd.append("authors", a));
-        (newBook.categories || []).forEach((c) => c && fd.append("categories", c));
+        authorsArray.forEach((a) => fd.append("authors", a));
+        categoriesArray.forEach((c) => fd.append("categories", c));
         if (coverFile) fd.append("cover", coverFile);
         if (audioFile) fd.append("audio", audioFile);
 
@@ -284,6 +294,8 @@ const BookManagement = () => {
         coda: "",
         imageUrl: "",
       });
+      setAuthorsInput("");
+      setCategoriesInput("");
       setImagePreview("");
       setCoverFile(null);
       setAudioFile(null);
@@ -400,26 +412,16 @@ const BookManagement = () => {
 
             <label>ავტორები (კომა-მით მოყოფილი)</label>
             <input
-              placeholder="ავტორები"
-              value={(newBook.authors || []).join(", ")}
-              onChange={(e) =>
-                setNewBook({
-                  ...newBook,
-                  authors: e.target.value.split(",").map((a) => a.trim()).filter(Boolean),
-                })
-              }
+              placeholder="ავტორები (მაგ: J.R.R. Tolkien, George R.R. Martin)"
+              value={authorsInput}
+              onChange={(e) => setAuthorsInput(e.target.value)}
             />
 
             <label>კატეგორიები (კომა-მით მოყოფილი)</label>
             <input
-              placeholder="კატეგორიები"
-              value={(newBook.categories || []).join(", ")}
-              onChange={(e) =>
-                setNewBook({
-                  ...newBook,
-                  categories: e.target.value.split(",").map((c) => c.trim()).filter(Boolean),
-                })
-              }
+              placeholder="კატეგორიები (მაგ: Fantasy, Adventure)"
+              value={categoriesInput}
+              onChange={(e) => setCategoriesInput(e.target.value)}
             />
 
             <label>მოკლე აღწერა</label>
@@ -469,6 +471,20 @@ const BookManagement = () => {
                 onClick={() => {
                   setShowModal(false);
                   setEditing(null);
+                  setAuthorsInput("");
+                  setCategoriesInput("");
+                  setNewBook({
+                    title: "",
+                    authors: [],
+                    categories: [],
+                    short: "",
+                    summary: "",
+                    coda: "",
+                    imageUrl: "",
+                  });
+                  setImagePreview("");
+                  setCoverFile(null);
+                  setAudioFile(null);
                 }}
               >
                 გაუქმება

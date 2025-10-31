@@ -151,6 +151,8 @@ export const AuthProvider = ({ children }) => {
     setRefreshToken(null);
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('token'); // For admin compatibility
+    localStorage.removeItem('user'); // For admin compatibility
   }, []);
 
   // პაროლის შეცვლის ფუნქცია
